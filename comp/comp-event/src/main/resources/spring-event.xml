@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+	     http://www.springframework.org/schema/beans 
+	     http://www.springframework.org/schema/beans/spring-beans-4.0.xsd       
+	     http://www.springframework.org/schema/mvc 
+	     http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+	     http://www.springframework.org/schema/context 
+	     http://www.springframework.org/schema/context/spring-context-4.0.xsd        
+	     http://www.springframework.org/schema/aop 
+	     http://www.springframework.org/schema/aop/spring-aop-4.0.xsd       
+	     http://www.springframework.org/schema/tx 
+	     http://www.springframework.org/schema/tx/spring-tx.xsd       
+	     http://www.springframework.org/schema/jee
+	     http://www.springframework.org/schema/jee/spring-jee-3.0.xsd">
+
+	<!-- event -->
+	<bean class="my.comp.event.EventPublisherConfigurer"/>
+	
+	<bean class="my.comp.event.DefaultEventPublisher"/>
+	
+	<bean class="my.comp.event.handler.AsyncEventHandlerFactory">
+		<lookup-method name="getExecutor" bean="taskExecutor"/>
+	</bean>
+
+	<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" scope="prototype">
+		<!-- 线程池维护线程的最少数量 -->
+		<property name="corePoolSize" value="5" />
+		<!-- 线程池维护线程所允许的空闲时间 -->
+		<property name="keepAliveSeconds" value="30000" />
+		<!-- 线程池维护线程的最大数量 -->
+		<property name="maxPoolSize" value="1000" />
+		<!-- 线程池所使用的缓冲队列 -->
+		<property name="queueCapacity" value="200" />
+	</bean>
+
+</beans>

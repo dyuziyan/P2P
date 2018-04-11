@@ -1,0 +1,95 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>my.comp</groupId>
+		<artifactId>comp</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>comp-bom</artifactId>
+	<packaging>pom</packaging>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>my.comp</groupId>
+				<artifactId>comp-redis</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>my.comp</groupId>
+				<artifactId>comp-dao</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>my.comp</groupId>
+				<artifactId>comp-dao-mybatis</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>my.comp</groupId>
+				<artifactId>comp-event</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+<!-- 			<dependency> -->
+<!-- 				<groupId>my.comp</groupId> -->
+<!-- 				<artifactId>comp-file</artifactId> -->
+<!-- 				<version>${project.version}</version> -->
+<!-- 			</dependency> -->
+			<dependency>
+				<groupId>my.comp</groupId>
+				<artifactId>comp-freemarker</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>my.comp</groupId>
+				<artifactId>comp-hessian</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>my.comp</groupId>
+				<artifactId>comp-http</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+<!-- 			<dependency> -->
+<!-- 				<groupId>my.comp</groupId> -->
+<!-- 				<artifactId>comp-jms</artifactId> -->
+<!-- 				<version>${project.version}</version> -->
+<!-- 			</dependency> -->
+			<dependency>
+				<groupId>my.comp</groupId>
+				<artifactId>comp-lang</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+<!-- 			<dependency> -->
+<!-- 				<groupId>my.comp</groupId> -->
+<!-- 				<artifactId>comp-mail</artifactId> -->
+<!-- 				<version>${project.version}</version> -->
+<!-- 			</dependency> -->
+			<dependency>
+				<groupId>my.comp</groupId>
+				<artifactId>comp-mvc</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>my.comp</groupId>
+				<artifactId>comp-pay-api</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+<!-- 			<dependency> -->
+<!-- 				<groupId>my.comp</groupId> -->
+<!-- 				<artifactId>comp-pay-impl</artifactId> -->
+<!-- 				<version>${project.version}</version> -->
+<!-- 			</dependency> -->
+			<dependency>
+				<groupId>my.comp</groupId>
+				<artifactId>comp-rmi</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+<!-- 			<dependency> -->
+<!-- 				<groupId>my.comp</groupId> -->
+<!-- 				<artifactId>comp-sms</artifactId> -->
+<!-- 				<version>${project.version}</version> -->
+<!-- 			</dependency> -->
+		</dependencies>
+	</dependencyManagement>
+</project>
