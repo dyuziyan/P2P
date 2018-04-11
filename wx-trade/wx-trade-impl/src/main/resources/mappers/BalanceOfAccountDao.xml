@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.trade.dao.BalanceOfAccountDao">
+	
+	<resultMap type="balanceOfAccount" id="balanceOfAccount" autoMapping="true"/>
+	<resultMap type="toCompareDomain" id="toCompareDomain" autoMapping="true"/>
+	
+	<select id="getCountForBalanceOfAccount"  resultType="Integer">
+		select count(*) from t_wx_bank_charge_wdc_redpaper_file where comparestate=0 and type=#{type}
+	</select>
+	
+	<select id="getBalanceOfAccountList"  resultMap="balanceOfAccount" parameterType="Map">
+		select * from t_wx_bank_charge_wdc_redpaper_file where comparestate=0 and type=#{type} and MOD(id,#{modNum})=#{modPage}
+	</select>
+
+	<select id="getCountForRecharge"  resultType="Integer">
+		select count(*) 
+		from t_recharge_detail 
+		where is_deposit=1 and rechargeTime &lt;=concat(date(DATE_SUB(now(),INTERVAL 1 day)),' 23:59:59') and compareState=0
+	</select>
+	<select id="getCountForRedPacket"  resultType="Integer">
+		SELECT count(*)
+		FROM t_fundrecord f inner JOIN t_bank_request b ON f.serial_number = b.serialNumber 
+		WHERE f.recordTime &lt;= concat(date(DATE_SUB(now(),INTERVAL 1 day)),' 23:59:59')
+		AND b.biz_type = 'ExperBonus' and	f.operateType IN (2003,2004,7001,8003,8004) AND f.is_deposit = 1 AND f.compareState=0
+	</select>
+	<select id="getCountForWithdraw"  resultType="Integer">
+		SELECT count(*) 
+		FROM t_withdraw 
+		where is_deposit=1 and applyTime &lt;=concat(date(DATE_SUB(now(),INTERVAL 1 day)),' 23:59:59') and compareState=0
+	</select>
+	<select id="getCountForFundTransfer"  resultType="Integer">
+		SELECT count(*)
+		FROM t_fundrecord f inner JOIN t_bank_request b ON f.serial_number = b.mer_bill_no 
+		WHERE f.recordTime &lt;= concat(date(DATE_SUB(now(),INTERVAL 1 day)),' 23:59:59')
+		AND b.biz_type = 'UserBalTransfer' and	f.operateType=8001 AND f.is_deposit = 1 AND f.compareState=0
+	</select>
+	<select id="getRechargeCompareList"  resultMap="toCompareDomain" parameterType="Map">
+		select serialNumber as MerBillNo,rechargeMoney as TransAmt,date_format(rechargeTime,'%Y%m%d') as CreDt,1 AS type
+		from t_recharge_detail 
+		where is_deposit=1 and rechargeTime &lt;=concat(date(DATE_SUB(now(),INTERVAL 1 day)),' 23:59:59') 
+		and compareState=0 AND MOD(serialNumber,#{modNum})=#{modPage}
+	</select>
+	<select id="getRedPacketCompareList"  resultMap="toCompareDomain" parameterType="Map">
+		SELECT b.mer_bill_no AS MerBillNo,f.handleSum AS TransAmt,date_format(f.recordTime, '%Y%m%d') AS CreDt,3 AS type
+		FROM t_fundrecord f inner JOIN t_bank_request b ON f.serial_number = b.serialNumber 
+		WHERE f.recordTime &lt;=concat(date(DATE_SUB(now(),INTERVAL 1 day)),' 23:59:59')
+		AND b.biz_type = 'ExperBonus' and	f.operateType IN (2003,2004,7001,8003,8004) AND f.is_deposit = 1 AND f.compareState=0
+		AND MOD(b.mer_bill_no,#{modNum})=#{modPage}
+	</select>
+	<select id="getWithdrawCompareList"  resultMap="toCompareDomain" parameterType="Map">	
+		SELECT serialNumber as MerBillNo,sum as TransAmt,date_format(applyTime,'%Y%m%d') as CreDt,2 AS type
+		FROM t_withdraw 
+		where is_deposit=1 and applyTime &lt;=concat(date(DATE_SUB(now(),INTERVAL 1 day)),' 23:59:59') and compareState=0 and 
+		MOD(serialNumber,#{modNum})=#{modPage}
+	</select>
+	<select id="getFundTransferCompareList"  resultMap="toCompareDomain" parameterType="Map">	
+		SELECT b.mer_bill_no AS MerBillNo,f.handleSum AS TransAmt,date_format(f.recordTime, '%Y%m%d') AS CreDt,4 AS type
+		FROM t_fundrecord f inner JOIN t_bank_request b ON f.serial_number = b.mer_bill_no 
+		WHERE f.recordTime &lt;=concat(date(DATE_SUB(now(),INTERVAL 1 day)),' 23:59:59')
+		AND b.biz_type = 'UserBalTransfer' and	f.operateType=8001 AND f.is_deposit = 1 AND f.compareState=0
+		AND MOD(b.mer_bill_no,#{modNum})=#{modPage}
+	</select>
+
+	<update id="batchUpdateBalanceOfAccount"  parameterType="java.util.List">  
+          <foreach collection="list" item="item" index="index" open="" close="" separator=";">  
+                update t_wx_bank_charge_wdc_redpaper_file   
+                <set>  
+                  comparestate=#{item.comparestate}
+                </set>  
+                where MerBillNo = #{item.MerBillNo}  
+         </foreach>  
+    </update>  
+    <update id="batchUpdateRecharge"  parameterType="java.util.List">  
+          <foreach collection="list" item="item" index="index" open="" close="" separator=";">  
+                update t_recharge_detail   
+                <set>  
+                  compareState=1
+                </set>  
+                where serialNumber = #{item.MerBillNo}  
+         </foreach>  
+    </update>  
+    <update id="batchUpdateRedPacket"  parameterType="java.util.List">  
+          <foreach collection="list" item="item" index="index" open="" close="" separator=";">  
+                update t_fundrecord
+                <set>  
+                  compareState=1
+                </set>  
+                where serial_number=(select serialNumber from t_bank_request where mer_bill_no= #{item.MerBillNo})
+         </foreach>  
+    </update>
+     <update id="batchUpdateFundTransfer"  parameterType="java.util.List">  
+          <foreach collection="list" item="item" index="index" open="" close="" separator=";">  
+                update t_fundrecord
+                <set>  
+                  compareState=1
+                </set>  
+                where serial_number=#{item.MerBillNo}
+         </foreach>  
+    </update> 
+    <update id="batchUpdateWithdraw"  parameterType="java.util.List">  
+          <foreach collection="list" item="item" index="index" open="" close="" separator=";">  
+                update t_withdraw   
+                <set>  
+                  	<choose>
+			               <when test="item.ChargeCorg!=null and item.ChargeCorg=='S1'">
+			                      status = 2,compareState=1
+			               </when>
+			               <when test="item.ChargeCorg!=null and (item.ChargeCorg=='F1' or item.ChargeCorg=='F2' or item.ChargeCorg=='R9')">
+			                       status = 5,compareState=1
+			               </when>
+			               <otherwise>
+			                       compareState=0
+			               </otherwise>
+			         </choose>
+                </set>  
+                where serialNumber = #{item.MerBillNo}  
+         </foreach>  
+    </update>  
+    
+    <insert id="batchUpdateToBeCompare" useGeneratedKeys="true" parameterType="java.util.List">  
+	    insert into t_datacompare (serialNumber,oldInfo,createDate,compareType,compareState) values  
+	    <foreach collection="list" item="item" index="index" separator=",">  
+	        (#{item.MerBillNo},#{item.TransAmt},now(),#{item.type},#{item.compareState})
+	    </foreach>  
+	</insert>  
+	
+	
+	<select id="getCountForInvestBalanceOfAccount" resultType="Integer">
+		select count(*)
+		from t_wx_bank_invest_file 
+		where comparestate=0
+	</select>
+	<select id="getInvestBalanceOfAccountList"  resultMap="balanceOfAccount" parameterType="Map">
+		select id as id,TransId as OrdNo,CreDt as CreDt,TransAmt as TransAmt, PlaCustId as PlaCustId,MerBillNo as MerBillNo,
+		OrdSts as ChargeCorg,5 as type,comparestate as comparestate
+		from t_wx_bank_invest_file 
+		where comparestate=0 and MOD(id,#{modNum})=#{modPage}
+	</select>
+	<select id="getCountForInvest"  resultType="Integer">
+		select count(*) 
+		from t_invest 
+		where is_deposit=1 and investTime &lt;=concat(date(DATE_SUB(now(),INTERVAL 1 day)),' 23:59:59') and compareState=0
+	</select>
+	<select id="getInvestCompareList"  resultMap="toCompareDomain" parameterType="Map">
+		select serialNumber as MerBillNo,investAmount as TransAmt,date_format(investTime,'%Y%m%d') as CreDt,5 AS type
+		from t_invest 
+		where is_deposit=1 and investTime &lt;=concat(date(DATE_SUB(now(),INTERVAL 1 day)),' 23:59:59') 
+		and compareState=0 AND MOD(serialNumber,#{modNum})=#{modPage}
+	</select>
+	<update id="batchUpdateInvestBalanceOfAccount"  parameterType="java.util.List">  
+          <foreach collection="list" item="item" index="index" open="" close="" separator=";">  
+                update t_wx_bank_invest_file   
+                <set>  
+                  comparestate=#{item.comparestate}
+                </set>  
+                where MerBillNo = #{item.MerBillNo}  
+         </foreach>  
+    </update>  
+    <update id="batchUpdateInvest"  parameterType="java.util.List">  
+          <foreach collection="list" item="item" index="index" open="" close="" separator=";">  
+                update t_invest   
+                <set>  
+                  compareState=1
+                </set>  
+                where serialNumber = #{item.MerBillNo}  
+         </foreach>  
+    </update>  
+    
+    <select id="getCompareList" resultMap="toCompareDomain" parameterType="java.util.List">
+		select serialNumber as MerBillNo,oldInfo as TransAmt,compareType as type,compareState as compareState
+		from t_datacompare where serialNumber in
+		 <foreach collection="list" item="item" index="index"  open="(" separator="," close=")" >  
+            #{item.MerBillNo}  
+        </foreach>
+	</select>
+</mapper>

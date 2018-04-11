@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+  	
+	<!-- 提供方应用信息，用于计算依赖关系 -->
+	<dubbo:application name="wx_carload_provider" />
+
+	<!-- 使用zookeeper注册中心暴露服务地址 -->
+	<dubbo:registry protocol="zookeeper" address="${wx.dubbo.registry.address}" />
+
+	<!-- 用dubbo协议在20880端口暴露服务 
+		threads:服务线程池大小 默认100
+		accepts:服务提供方最大可接受连接数 默认0
+		payload：请求及相应数据包大小限制，单位：字节 默认8M
+	-->    
+	<dubbo:protocol name="dubbo" port="${wx.dubbo.open.port}" threads="${wx.dubbo.protocol.threads}"/>
+	<dubbo:protocol name="hessian" port="8005"  contextpath="carload" server="servlet" />
+
+	<dubbo:provider protocol="dubbo"/>
+	<!-- 声明需要暴露的服务接口 -->    
+	<!-- 
+		interface服务接口的路径   ref引用对应的实现类的Bean的ID
+		registry向指定注册中心注册，在多个注册中心时使用，值为<dubbo:registry>的id属性，多个注册中心ID用逗号分隔，如果不想将该服务注册到任何registry，可将值设为N/A
+		register 默认true ，该协议的服务是否注册到注册中心。
+	 -->
+<!-- 	<dubbo:service interface="com.wx.member.service.LoginService" ref="loginServices" loadbalance="${wx.dubbo.loadbalance}" cluster="${wx.dubbo.cluster}" retries="${wx.dubbo.retries}" timeout="${wx.dubbo.service.timeout}"/>    -->
+	<!-- 和本地bean一样实现服务 -->    
+<!-- 	<bean id="loginServices" class="com.wx.member.service.login.LoginServiceImpl" />
+
+	<dubbo:service interface="com.wx.carloadaccount.service.UserCarlisService" ref="userCarlisService"/>  
+	<bean id="userCarlisService" class="com.wx.carloadaccount.service.UserCarlisServiceImpl" />
+	
+	<dubbo:service interface="com.wx.carloadaccount.service.DictService" ref="dictService"/>  
+	<bean id="dictService" class="com.wx.carloadaccount.service.DictServiceImpl" />
+	
+	<dubbo:service interface="com.wx.carloadtrade.service.OrderMaintListService" ref="orderMaintListService"/>  
+	<bean id="orderMaintListService" class="com.wx.carloadtrade.service.impl.OrderMaintListServiceImpl" />
+	
+	<dubbo:service interface="com.wx.carloadaccount.service.BusiShopsListService" ref="busiShopsListService"/>  
+	<bean id="busiShopsListService" class="com.wx.carloadaccount.service.BusiShopsListServiceImpl" />
+	 -->
+	 
+	<dubbo:service interface="com.wx.carloadbase.service.AdvertService" ref="advertService"/>  
+	<bean id="advertService" class="com.wx.carloadbase.service.impl.AdvertServiceImpl" />
+	
+	<dubbo:service interface="com.wx.carloadbase.service.LogService" ref="logService"/>  
+	<bean id="logService" class="com.wx.carloadbase.service.impl.LogServiceImpl" />
+	
+	<dubbo:service interface="com.wx.carloadaccount.service.OutUserService" ref="outUserService"/>  
+	<bean id="outUserService" class="com.wx.carloadaccount.OutSaveUserServiceimpl" />
+	
+	<dubbo:service interface="com.wx.carloadtrade.service.OrderRefundService" ref="orderRefundService"/>  
+	<bean id="orderRefundService" class="com.wx.carloadtrade.service.impl.OrderRefundServiceImpl" />
+	
+	<dubbo:service interface="com.wx.carloadaccount.service.UserFeedbackService" ref="userFeedbackService"/>  
+	<bean id="userFeedbackService" class="com.wx.carloadaccount.service.UserFeedbackServiceImpl" />
+	
+	
+	<dubbo:service interface="com.wx.carloadbase.service.CarServiceService" ref="carServiceService"/>  
+	<bean id="carServiceService" class="com.wx.carloadbase.CarServiceImpl" />
+	
+	<dubbo:service interface="com.wx.carloadtrade.service.OrderService" ref="orderService"/>  
+	<bean id="orderService" class="com.wx.carloadtrade.OrderServiceImpl" />
+	
+	<dubbo:service interface="com.wx.carloadtrade.service.PayService" ref="payService"/>  
+	<bean id="payService" class="com.wx.carloadtrade.PayServiceImpl" />
+	
+	
+	 <dubbo:service interface="com.wx.carloadaccount.service.UserCarlisService" ref="userCarlisService"/>  
+	<bean id="userCarlisService" class="com.wx.carloadaccount.service.UserCarlisServiceImpl" />
+ 	<dubbo:service protocol="hessian" interface="com.wx.carloadmember.service.testService" ref="testService" timeout="100000" />
+	<bean id="testService" class="com.wx.carloadmember.service.impl.testServiceImpl"/>
+	<!-- 使用注解方式暴露接口 -->     
+    <dubbo:annotation package="com.wx.carloadbase.service,com.wx.carloadmessage.service,com.wx.carloadmember.service,com.wx.carloadaccount.service,com.wx.carloadtrade.service"/>  
+</beans>

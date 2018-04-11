@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.carloadaccount.dao.DictDao">
+   
+    <sql id="limitSql">
+		LIMIT #{startRow},#{rows}
+	</sql>
+
+	
+	
+	<!-- 获取区域 -->
+	<select id="queryArea" parameterType="baseGeogArea" resultType="baseGeogArea">
+     <!--	SELECT t.id,t.first_letter firstLetter,t.area_no areaNo,t.area_name areaName,
+     	t.parent_area_no parentAreaNo FROM t_base_geog_area t
+       <where>  
+	       t.area_level = #{areaLevel}
+	       and t.parent_area_no = #{parentAreaNo}
+       </where>  -->
+       
+      	select t.id,t.first_letter firstLetter,t.area_no areaNo,t.area_name areaName,
+     	t.parent_area_no parentAreaNo 
+     	from t_base_geog_area t
+     	
+     	  <where>
+     	  1=1
+     	   <if test="areaName != null and areaName !=''">  
+	          and t.parent_area_no = (
+     			select area_no from t_base_geog_area  where area_name = #{areaName}
+     		   )
+	     	</if>  
+	     	<if test="areaLevel != null and areaLevel !=''">  
+	          and t.area_level = #{areaLevel}
+	     	</if>  
+	     	<if test="parentAreaNo != null and parentAreaNo !=''">  
+	           and t.parent_area_no = #{parentAreaNo}
+	     	</if>  
+     	 </where>
+     		<if test="startRow !=null and rows!=null">
+				<include refid="limitSql"></include>
+			</if>
+     </select>
+     
+    <!-- 车辆品牌 -->
+     <select id="queryCarBrandBs" parameterType="String"
+		resultType="carBrandBs">
+			select id brandId,initial_letter initialLetter,brand_name 	brandName ,brand_picture_url brandPictureUrl from t_car_car_brand_bs   
+		<where>
+			 <if test="id != null and id !=''">  
+	            	and id = #{id}   
+	     	</if>  
+	    </where>
+			<if test="startRow !=null and rows!=null">
+				<include refid="limitSql"></include>
+			</if>
+	</select>
+	
+	<!--  汽车品牌类型 -->
+     <select id="queryCarBrandTypeBs" parameterType="String"
+		resultType="carBrandTypeBs">
+			select id brandTypeId,brand_id brandId,brand_type brandType from  t_car_car_brand_type_bs 
+		<where>
+			1=1
+			 <if test="id != null and id !=''">  
+	            	and id = #{id}   
+	     	</if>  
+	     	<if test="brandId != null and brandId !=''">  
+	            	and brand_id = #{brandId}   
+	     	</if>  
+	    </where>
+			<if test="startRow !=null and rows!=null">
+				<include refid="limitSql"></include>
+			</if>
+	</select>
+	
+	<!--  汽车车型 -->
+     <select id="queryCarModleBs" parameterType="String"
+		resultType="carModleBs">
+			select c.id modleId,c.brand_id brandId,c.brand_type_id brandTypeId,brand_type brandType,c.modle_name modleName,
+			y.brand_type brandTypeName
+			 from t_car_car_modle_bs c left join t_car_car_brand_type_bs y on c.brand_type_id = y.id
+		<where>
+			1=1
+			 <if test="id != null and id !=''">  
+	            	and c.id = #{id}   
+	     	</if>  
+	     	<if test="brandId != null and brandId !=''">  
+	            	and c.brand_id = #{brandId}   
+	     	</if> 
+	     	<if test="brandTypeId != null and brandTypeId !=''">  
+	            	and c.brand_type_id = #{brandTypeId}   
+	     	</if> 
+	    </where>
+			<if test="startRow !=null and rows!=null">
+				<include refid="limitSql"></include>
+			</if>
+	</select>
+	
+	<!--  汽车年款 -->
+     <select id="queryCaryearstylebs" parameterType="String"
+		resultType="caryearstylebs">
+			select id yearstyleId,brand_id brandId,brand_name brandName,brand_type_id brandTypeId,brand_type brandType,
+			modle_id modleId,modle_name modleName,yearstyle_name yearstyleName from t_car_car_yearstyle_bs 
+		<where>
+			1=1
+			 <if test="id != null and id !=''">  
+	            	and id = #{id}   
+	     	</if>  
+	     	<if test="brandId != null and brandId !=''">  
+	            	and brand_id = #{brandId}   
+	     	</if> 
+	     	<if test="brandTypeId != null and brandTypeId !=''">  
+	            	and brand_type_id = #{brandTypeId}   
+	     	</if>
+	     	<if test="modleId != null and modleId !=''">  
+	            	and modle_id = #{modleId}   
+	     	</if> 
+	    </where>
+			<if test="startRow !=null and rows!=null">
+				<include refid="limitSql"></include>
+			</if>
+	</select>
+	
+	 <!-- 查询类型代号 -->
+     <select id="queryTypeCodeLib" parameterType="com.wx.carloadaccount.dto.TypeCodeLibDTO" resultType="com.wx.carloadaccount.dto.TypeCodeLibDTO">
+		select id,type_kind_num typeKindNum,type_kind_name typeKindKame,type_code serviceTypeCode,type_name typeName from t_base_type_code_lib
+		<where>
+			is_show = 1 and is_del = 0
+			 <if test="id != null and id !=''">  
+	            	and id = #{id}   
+	     	</if>  
+	     	<if test="typeKindNum != null and typeKindNum !=''">  
+	            	and type_kind_num = #{typeKindNum}   
+	     	</if>
+	     	<if test="isShow != null and isShow !=''">  
+	            	and is_show = #{isShow}   
+	     	</if>
+	    </where>
+	    ORDER BY serial_number
+	</select>
+	
+	
+	<!-- 查询APP版本信息 -->
+     <select id="queryAppInfo"  resultType="com.wx.carloadaccount.dto.AppInfoDTO">
+		select  id,app_type appType,version_num	versionNum,update_log updateLog,
+		app_url appUrl,force_update forceUpdate,update_time updateTime
+		from t_app_info
+		<where>
+			 <if test="appType > 0">  
+	            	app_type = #{appType}   
+	     	</if>  
+	    </where>
+	    order by id desc
+	</select>
+	
+	<!-- 获取代驾费用 -->
+     <select id="getDrivePrice" resultType="map">
+		select price from t_busi_shop_door_service 
+		<where>
+			is_valid = 1 and is_del = 0
+			and province_code =#{provinceCode} 
+			and city_code = #{cityCode}
+			and #{kilometres} &gt;= kilometres_begin 
+			and #{kilometres} &lt;= kilometres_end
+	    </where>
+	</select>
+	
+	<!-- 获取高德地图城市名称 -->
+     <select id="getCityName"  resultType="java.lang.String">
+		select city_name from t_base_amap_area
+		<where>
+			ad_code =  #{adCode}
+	    </where>
+	</select>
+	
+	<!-- 获取点播列表 -->
+     <select id="getLiveOfflineList"  resultType="map">
+		select o.id ,o.main_order_num mainOrderNum,o.back_play_url backPlayUrl,o.serial_num serialNum,o.state_flag stateFlag,
+		concat(m.car_brand_name,m.car_yearstyle_name ,m.car_modle_name) as carinfo,m.car_number carNumber,
+		DATE_FORMAT(m.order_time,'%Y-%m-%d %T') orderTime,i.user_picture_url userPictureUrl,
+		IF(i.user_name IS NOT NULL,i.nick_name,INSERT(l.user_phone,4,4,'****')) AS mobilePhone,
+		m.busi_shop_name busiShopName
+		from t_order_live_offline_list o left join t_order_main_list  m on o.main_order_num = m.main_order_num
+		left join t_user_userinfo i on m.user_id = i.user_id
+    	LEFT join t_user_userlist l on m.user_id = l.id
+    	<if test="startRow !=null and rows!=null">
+				<include refid="limitSql"></include>
+        </if>
+	</select>
+	
+	<!-- 获取直播列表 -->
+     <select id="getLiveOnlineList"  resultType="map">
+		select o.work_station_num workStationNum,o.work_station_name workStationName,o.push_flow_url pushFlowUrl,
+		o.play_url playUrl,o.live_state liveState,concat(m.car_brand_name ,' ',m.car_modle_name) as carinfo,
+		DATE_FORMAT(m.order_time,'%Y-%m-%d %T') orderTime,m.order_total_price orderTotalPrice,m.discount_price discountPrice,
+		i.user_picture_url userPictureUrl,IF(i.user_name IS NOT NULL,i.nick_name,INSERT(l.user_phone,4,4,'****')) AS mobilePhone,
+		m.car_number carNumber
+		from t_order_live_online_list o left join t_order_main_list m on  o.main_order_num = m.main_order_num
+		left join t_user_userinfo i on m.user_id = i.user_id
+   		LEFT join t_user_userlist l on m.user_id = l.id
+		<where>
+			m.main_order_num in(${mainOrderNum})
+	    	and live_state = 1
+	    </where>
+	    
+	</select>
+</mapper>
+
+

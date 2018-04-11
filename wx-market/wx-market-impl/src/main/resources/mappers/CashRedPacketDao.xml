@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.market.dao.CashRedPacketDao">
+	
+	<select id="getCashRedPacketForUpdate" resultType="cashRedPacket">
+		select *
+		from t_user_redpacket 
+		where 1=1
+		<if test="state !=null">
+				and use_state = #{state}
+		</if>
+		<if test="cashRedPacketId != null and cashRedPacketId != ''">
+				and redpacketCode = #{cashRedPacketId}
+		</if>
+		<if test="userId != null">
+				and userid = #{userId}
+		</if>
+		for update
+	</select>
+	
+	<update id="update" parameterType="cashRedPacket">
+		update t_user_redpacket
+		<set>
+			redwrap = #{redwrap},
+			STRAT_DATE = #{STRAT_DATE},
+			END_DATE = #{END_DATE},
+			receivedate=#{receivedate},
+			IS_VID=#{IS_VID},
+			usedate=#{usedate},
+			use_state=#{use_state},
+			redproportion=#{redproportion},
+			GIVEREDDESC=#{GIVEREDDESC},
+			redpacketCode=#{redpacketCode},
+			REDPACKETTYPE=#{REDPACKETTYPE},
+			productday=#{productday},
+			read_flag=#{read_flag},
+			is_deposit=1
+		</set>
+		where userid=#{userid} and redpacketCode=#{redpacketCode}
+	</update>
+	
+</mapper>

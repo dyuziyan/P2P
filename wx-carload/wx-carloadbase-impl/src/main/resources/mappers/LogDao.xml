@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.carloadbase.dao.LogDao">
+	
+	<insert id="saveUserOperateLog" useGeneratedKeys="true">
+		INSERT INTO t_user_log_operation_log (user_id,operate_time,ip_address,operate_type,operate_desc)
+		VALUES(#{userId},now(),#{ipAddress},#{operateType},#{operateDesc})
+	</insert>
+	
+	<insert id="saveUserLoginLog" useGeneratedKeys="true">
+		INSERT INTO t_user_log_login_log (user_id,login_time,ip_address,platform_type)
+		VALUES(#{userId},now(),#{ipAddress},#{platformType})
+	</insert>
+	
+	<!-- 养护-订单操作日志 -->
+	<insert id="saveCareOrderLog" useGeneratedKeys="true">
+		INSERT INTO t_order_care_operation_log   (main_order_num,order_num,handle_type,remark,handle_time)
+		VALUES(#{mainOrderNum},#{orderNum},#{handleType},#{remark},now())
+	</insert>
+	
+	<!-- 保养-订单操作日志 -->
+	<insert id="saveMaintainOrderLog" useGeneratedKeys="true">
+		INSERT INTO t_order_maintain_operation_log   (main_order_num,order_num,handle_type,remark,handle_time)
+		VALUES(#{mainOrderNum},#{orderNum},#{handleType},#{remark},now())
+	</insert>
+	
+	<!-- 维修-订单操作日志 -->
+	<insert id="saveRepairOrderLog" useGeneratedKeys="true">
+		INSERT INTO t_order_repair_operation_log  (main_order_num,order_num,handle_type,remark,handle_time)
+		VALUES(#{mainOrderNum},#{orderNum},#{handleType},#{remark},now())
+	</insert>
+	
+</mapper>

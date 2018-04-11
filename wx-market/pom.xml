@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.wx</groupId>
+	<artifactId>wx-market</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<modules>
+		<module>wx-market-abst</module>
+		<module>wx-market-api</module>
+		<module>wx-market-impl</module>
+		<module>wx-server-market</module>
+		<module>wx-market-parent</module>
+    	<module>wx-market-jms</module>
+  </modules>
+	<scm>
+		<connection>scm:svn:https://192.168.1.146/wx/wx_market</connection>
+		<developerConnection>scm:svn:https://192.168.1.146/wx/wx_market</developerConnection>
+	</scm>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<tagBase>https://192.168.1.146/wx/wx_market/tags</tagBase>
+					<branchBase>https://192.168.1.146/wx/wx_market/branches</branchBase>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

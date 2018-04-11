@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.carloadaccount.dao.UserCarlisDao">
+   
+    <sql id="limitSql">
+		LIMIT #{startRow},#{rows}
+	</sql>
+	
+	<!-- 添加座驾 -->
+	<insert id="saveUserCarlis"  parameterType="userCarlis"  useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_user_carlist(user_id,car_brand_id,car_brand,car_brand_type_id,
+		car_brand_type,car_modle_id,car_modle,car_yearstyle_id,	car_yearstyle,
+		car_useyears,car_number,car_usekind,car_buy_time,car_run_km,vin_number,engine_number,last_maintain_time,
+		next_yearly_check_time,is_default,create_time,next_policy_time)
+		VALUES(#{userId},#{carBrandId},#{carBrand},#{carBrandTypeId},#{carBrandType},#{carModleId},
+		#{carModle},#{carYearstyleId},#{carYearstyle},#{carUseyears},#{carNumber},#{carUsekind},
+		#{carBuyTime},#{carRunKm},#{vinNumber},#{engineNumber},#{lastMaintainTime},#{nextYearlyCheckTime},
+		#{isDefault},now(),#{nextPolicyTime})
+	</insert>
+	
+	<!-- 修改座驾信息 -->
+	<update id="updateUserCarLsit"  parameterType="userCarlis">
+      	update t_user_carlist 
+      	<set>
+			car_number = #{carNumber},
+			car_buy_time = #{carBuyTime},
+			car_run_km = #{carRunKm},
+			vin_number = #{vinNumber},
+			engine_number = #{engineNumber},
+			last_maintain_time = #{lastMaintainTime},
+			next_yearly_check_time = #{nextYearlyCheckTime}
+      	</set>
+      	 WHERE ID = #{id}
+    </update>
+    
+    <!-- 设置默认座驾 -->
+    <update id="updateIsDefault"  parameterType="String">
+      	update t_user_carlist 
+      	<set>
+	         is_default = #{isDefault}
+      	</set>
+      	<where>
+	      	<if test="id != null and id != ''">
+		           ID = #{id}
+		    </if>
+		    <if test="userId != null and userId != ''">
+		            user_id = #{userId}
+		    </if>  
+      	 </where>
+    </update>
+    
+   <!-- 删除座驾   -->
+	<delete id="deleteUserCarLsit" parameterType="String">
+		update t_user_carlist set is_del = 1  where id = #{id} 
+	</delete>
+	
+	 <!-- 获取我的车辆 -->
+     <select id="queryUserCarlist" parameterType="map" resultType="com.wx.carloadaccount.dto.UserCarlistDTO">
+     	select c.id,c.user_id userId,c.car_brand_id carBrandId,c.car_brand carBrand,c.car_brand_type_id carBrandTypeId,
+     	c.car_brand_type carBrandType,c.car_modle_id carModleId,c.car_modle carModle,c.car_yearstyle_id carYearstyleId,
+		c.car_yearstyle carYearstyle,c.car_useyears carUseyears,c.car_number carNumber,c.car_usekind carUsekind,c.car_run_km carRunKm,
+		concat(c.car_brand ,c.car_yearstyle ,c.car_modle) as carinfo,c.is_default isDefault,b.brand_picture_url brandPictureUrl,
+	    car_buy_time carBuyTime,
+		vin_number vinNumber,engine_number engineNumber,
+		last_maintain_time lastMaintainTime,
+		next_yearly_check_time nextYearlyCheckTime,
+		next_policy_time nextPolicyTime
+ 		from  t_user_carlist c left join t_car_car_brand_bs b on c.car_brand_id = b.id
+       <where>  
+	      c.is_del = 0
+	        <if test="userId != null and userId !=''">
+	       		and  c.user_id = #{userId}
+	       </if> 
+	       <if test="isDefault != null and isDefault !=''">
+	       		and c.is_default = #{isDefault}
+	       </if> 
+	        <if test="carBrandId != null and carBrandId !=''">
+	       		and c.car_brand_id = #{carBrandId}
+	       </if> 
+	        <if test="id != null and id !=''">
+	       		and c.id = #{id}
+	       </if> 
+       </where>
+       	 order by  c.is_default DESC,c.create_time  DESC
+     </select>
+     
+     <!-- 验证该车是否存在服务中订单 -->
+      <select id="validateUserCar" parameterType="String" resultType="map">
+     	SELECT * FROM t_order_maint_list m
+       <where>  
+	       m.user_id = #{userId} and m.user_car_id = #{userCarId} and m.order_state not in(${orderState})
+       </where>
+     </select>
+     
+       <!-- 修改车辆的行驶里程-->
+    <update id="updateCarRunKm"  parameterType="String">
+      	update t_user_carlist 
+      	<set>
+	         car_run_km = #{carRunKm}
+      	</set>
+      	<where>
+		     ID = #{carId}
+      	 </where>
+    </update>
+</mapper>
+
+

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.carloadmember.dao.RegisterUserDao">
+	<resultMap type="com.wx.carloadmember.dto.login.UserlistDTO" id="user">
+       <result property="id" column="ID"/>
+       <result property="userAccount" column="user_account"/>
+       <result property="userPhone" column="user_phone"/>
+	   <result property="userPictureUrl" column="user_picture_url"/>
+       <result property="userSex" column="user_sex"/>
+       <result property="userPwd" column="user_pwd"/>
+    </resultMap>
+   
+    <sql id="limitSql">
+		LIMIT #{startRow},#{rows}
+	</sql>
+	
+	<!-- 注册用户 -->
+	<insert id="registerUser"  parameterType="userlist"  useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_user_userlist(user_account,user_type,user_state,is_phone_check,
+		is_email_check,is_qq_bind,register_time,last_login_time,login_count,user_score,inputtime,user_pwd,user_phone)
+		VALUES(#{userAccount},#{userType},#{userState},#{isPhoneCheck},#{isEmailCheck},#{isQqBind},
+		#{registerTime},#{lastLoginTime},#{loginCount},#{userScore},#{inputtime},#{userPwd},#{userPhone})
+	</insert>
+	
+	<!-- 新增用户个人信息 -->
+	<insert id="saveUserInfo"  parameterType="userInfo"  useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_user_userinfo(user_id,user_name,user_picture_url,user_birthday,user_identity_num,
+		create_time)
+		VALUES(#{userId},#{userName},#{userPictureUrl},#{userBirthday},#{userIdentityNum},#{createTime})
+	</insert>
+	
+	<!-- 用户登陆 -->
+	<select id="userAppLogin" parameterType="String" resultType="com.wx.carloadmember.domain.Userlist">
+     	select l.id ,l.user_account as userAccount,i.user_picture_url as userPictureUrl,
+     	i.user_sex as userSex,l.user_phone as userPhone,l.user_pwd userPwd from t_user_userlist l left join  t_user_userinfo i on l.id = i.user_id 
+       <where>  
+	       l.user_account = #{mobile}
+	       
+	       <if test="password !=null ">
+				 and l.user_pwd = #{password}
+			</if>
+	      
+       </where>
+     </select>
+     
+     <!-- 获取用户信息 -->
+     <select id="queryUserInfoById" parameterType="String" resultMap="user">
+     	select * from t_user_userlist l left join  t_user_userinfo i on l.id = i.user_id 
+       <where>  
+	       l.id = #{userId}
+       </where>
+     </select>
+     
+    
+     
+     <!-- 修改用户密码 -->
+     <update id="updateUserPwd"  parameterType="String">
+      	update t_user_userlist set user_pwd = #{password} where  id = #{userId}
+    </update>
+    
+    <update id="updateUserPwdByMobile"  parameterType="String">
+      	update t_user_userlist set user_pwd = #{password} where  user_phone = #{mobile}
+    </update>
+    
+    <!-- 修改用户头像 -->
+    <update id="updateUserPicture"  parameterType="String">
+      	update t_user_userinfo set user_picture_url = #{pictureUrl} where  user_id = #{userId}
+    </update>
+    
+</mapper>
+
+

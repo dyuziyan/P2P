@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+	<!-- 业务处理器执行引擎 -->
+	<bean id="BusiEngineUtils" class="com.wx.market.BusiEngineUtils">
+		<property name="engine" ref="BusiEngine" /> <!-- 静态注入 -->
+	</bean>
+	<bean id="BusiEngine" class="com.wx.market.BusiEngineImpl">
+		<property name="busiContext">
+			<bean class="com.wx.market.BusiContextImpl"></bean>
+		</property>
+		<property name="filterChainProvider">
+			<bean class="com.wx.market.filter.BusiFilterChainProvider"></bean>
+		</property>
+		<property name="handlerChainProvider">
+			<bean class="com.wx.market.handler.BusiHandlerChainProvider"></bean>
+		</property>
+	</bean>
+	
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~后置处理器~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	
+	<!-- 投资返现处理器-->
+	<bean id="InvestCashBackHandler" class="com.wx.market.handler.invest.InvestCashBackHandler">
+		<property name="type" value="CASHBACK"/>
+	</bean>
+	<!-- 投资激活现金红包处理器-->
+	<bean id="InvestCashRedPacketHandler" class="com.wx.market.handler.invest.InvestCashRedPacketHandler">
+		<property name="type" value="CASHREDPACKET"/>
+	</bean>
+	
+	
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~后置处理器链~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	
+	<!-- [投资]处理器链 -->
+	<bean id="InvestHandlerChain" class="com.wx.market.handler.BusiHandlerChain">
+		<property name="event" value="INVEST"/>
+		<property name="handlers">
+			<list>
+				<!-- 投资返现-->
+				<ref bean="InvestCashBackHandler"/>
+				<!-- 激活现金红包-->
+				<ref bean="InvestCashRedPacketHandler"/>
+			</list>
+		</property>
+	</bean>
+	
+	
+</beans>
+
+

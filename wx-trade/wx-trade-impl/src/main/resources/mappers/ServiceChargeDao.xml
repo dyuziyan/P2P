@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.trade.dao.ServiceChargeDao">
+	
+	<select id="getUserFreeCharge" resultType="BigDecimal">
+	<![CDATA[ 
+	SELECT GREATEST((
+	  c.sum_15_before_rechargeMoney + a.sum_incoming + b.sum_cash_rtn_red - g.sum_ivt_befor_15_dyccz - l.dep_rch_inv_inner15 - d.sum_all_withdraw
+	  ), 0) 免提金额
+	  FROM
+	    (SELECT IFNULL(SUM(hasInterest), 0) sum_incoming
+	        FROM t_invest
+	        WHERE investor = #{userId}
+	          AND repayStatus = 2) a,
+	    (SELECT IFNULL(SUM(handleSum), 0) sum_cash_rtn_red
+	        FROM t_fundrecord
+	        WHERE userId = #{userId}
+	          AND operateType IN (2001, 2002, 2003, 6001, 7001)) b,
+	    (SELECT IFNULL(SUM(rechargeMoney), 0) sum_15_before_rechargeMoney
+	        FROM t_recharge_detail
+	        WHERE userId = #{userId}
+	          AND `STATUS` = 1
+	          AND rechargeTime <= DATE_ADD(NOW(), INTERVAL -15 DAY)) c,
+	    (SELECT IFNULL(SUM(`sum`), 0) sum_all_withdraw
+	        FROM t_withdraw
+	        WHERE userId = #{userId}
+	          AND `STATUS` in (2,4)) d,
+	    (SELECT IFNULL(SUM(investAmount), 0) sum_ivt_befor_15_dyccz
+	        FROM t_invest
+	        WHERE investor = #{userId}
+	          AND repayStatus = 1
+	          AND investTime < DATE_ADD(NOW(), INTERVAL -15 DAY)) g,
+	    (SELECT f_get_rch_inv(GROUP_CONCAT(handle_money)) dep_rch_inv_inner15
+	        FROM (SELECT handle_money,
+	                     handle_time
+	              FROM (SELECT CONCAT('I', investAmount) handle_money,
+	                           investTime handle_time
+	                    FROM t_invest
+	                    WHERE investor = #{userId}
+	                      AND repayStatus = 1
+	                      AND investTime BETWEEN DATE_ADD(NOW(), INTERVAL -15 DAY)
+	                      AND NOW()
+	                  UNION ALL
+	                  SELECT CONCAT('C', rechargeMoney) handle_money,
+	                         rechargeTime handle_time
+	                    FROM t_recharge_detail
+	                    WHERE userId = #{userId}
+	                      AND `STATUS` = 1
+	                      AND rechargeTime BETWEEN DATE_ADD(NOW(), INTERVAL -15 DAY)
+	                      AND NOW()) t
+	              ORDER BY handle_time ASC) t1) l;
+		]]>	
+	</select>
+	
+</mapper>

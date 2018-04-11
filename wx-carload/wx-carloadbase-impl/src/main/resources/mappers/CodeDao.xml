@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.carloadbase.dao.CodeDao">
+
+	<resultMap id="code" type="com.wx.carloadbase.dto.Code" autoMapping="true">
+		<id column="id" property="id" />
+	</resultMap>
+	
+	<!-- 获得Code配置信息 -->
+	<select id="getCode" parameterType="map" resultMap="code">
+		select * from b_code where type = #{type}  and code = #{code}
+	</select>
+	
+	<!-- 根据type获得所有对应的Code配置信息 -->
+	<select id="getCodesByType" parameterType="String" resultMap="code">
+		select * from b_code where type = #{type}
+	</select>
+	
+</mapper>

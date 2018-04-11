@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.carloadaccount.dao.UserDao">
+	<resultMap type="com.wx.carloadaccount.dto.UserInfoDTO" id="userInfo">
+		<result property="id" column="id" />
+		<result property="userAccount" column="user_account" />
+		<result property="userPictureUrl" column="user_picture_url" />
+		<result property="userPwd" column="user_pwd" />
+		<result property="nickName" column="nick_name" />
+		<result property="userName" column="user_name" />
+		<result property="userBirthday" column="user_birthday" />
+		<result property="licenseNumber" column="license_number" />
+		<result property="userSex" column="user_sex" />
+		<result property="userPhone" column="user_phone" />
+		<result property="userAddress" column="user_address" />
+		<result property="userIdentityNum" column="user_identity_num" />
+		<result property="getLicenseTime" column="get_license_time" />
+		<result property="addressDetail" column="user_address" />
+    </resultMap>
+   
+    <sql id="limitSql">
+		LIMIT #{startRow},#{rows}
+	</sql>
+	
+	
+	<!-- 新增用户个人信息 -->
+	<insert id="saveUserInfo"  parameterType="userInfo"  useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_user_userinfo(user_id,user_name,user_sex,user_picture_url,user_birthday,user_identity_num,
+		create_time)
+		VALUES(#{userId},#{userName},#{userSex},#{userPictureUrl},#{userBirthday},#{userIdentityNum},now())
+	</insert>
+	
+     
+     <!-- 获取用户信息 -->
+     <select id="queryUserInfoById" parameterType="String" resultMap="userInfo">
+     	SELECT l.id,i.user_picture_url,i.user_name,i.nick_name,i.user_sex,i.user_birthday,l.user_phone,
+		a.address_detail,d.license_number,d.user_identity_num,d.get_license_time,i.user_address
+		FROM t_user_userlist l
+		LEFT JOIN  t_user_userinfo i ON l.id = i.user_id 
+		LEFT JOIN t_user_address a ON l.id = a.user_id
+		LEFT JOIN t_user_driver_license d ON l.id = d.user_id
+       <where>  
+	       l.id = #{userId}
+       </where>
+     </select>
+     
+    
+     
+     <!-- 修改用户密码 -->
+     <update id="updateUserPwd"  parameterType="String">
+      	update t_user_userlist set user_pwd = #{password} where
+      	<if test="userId != null and userId !=''">
+	       		id = #{userId}
+	     </if> 
+	     <if test="mobile != null and mobile !=''">
+	       		user_phone = #{mobile}
+	     </if> 
+    </update>
+    
+    <update id="updateUserPwdByMobile"  parameterType="String">
+      	update t_user_userlist set user_pwd = #{password} where  user_phone = #{mobile}
+    </update>
+    
+    <!-- 修改用户头像 -->
+    <update id="updateUserPicture"  parameterType="String">
+      	update t_user_userinfo set user_picture_url = #{pictureUrl} where  user_id = #{userId}
+    </update>
+  
+    <!--   新增用户地址表  -->
+	<insert id="saveUserAddress"  parameterType="com.wx.carloadaccount.dto.UserAddressDTO"  useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_user_address(user_id,receiver_name,province,city,country,street,
+		address_detail,link_phone,post_code,is_default,create_time,is_del)
+		VALUES(#{userId},#{receiverName},#{province},#{city},#{country},#{street},#{addressDetail}
+		,#{linkPhone},#{postCode},#{isDefault},now(),#{isDel})
+	</insert>
+	   
+	<!--新增用户驾驶证信息-->
+	<insert id="saveUserDriverLicense"  parameterType="com.wx.carloadaccount.dto.UserLicenseDTO"  useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_user_driver_license(user_id,license_number,user_identity_num,get_license_time,create_time,is_del)
+		VALUES(#{userId},#{licenseNumber},#{userIdentityNum},#{getLicenseTime},now() ,#{isDel})
+	</insert>
+	
+	
+	<!-- 获取用户地址-->
+     <select id="queryUserAddress" parameterType="String" resultType="com.wx.carloadaccount.dto.UserAddressDTO">
+     	SELECT *
+		FROM t_user_address l
+       <where>  
+	       l.user_id = #{userId}
+       </where>
+     </select>
+     
+     <!--获取用户驾驶证信息-->
+     <select id="queryUserDriverLicense" parameterType="String" resultType="com.wx.carloadaccount.dto.UserLicenseDTO">
+     	SELECT *
+		FROM t_user_driver_license l
+       <where>  
+	       l.user_id = #{userId}
+       </where>
+     </select>
+     
+     <!--修改用户地址-->
+    <update id="updateUserAddress"  parameterType="com.wx.carloadaccount.dto.UserAddressDTO">
+      	update t_user_address set address_detail = #{addressDetail} where  user_id = #{userId}
+    </update>
+    
+    <!--修改用户驾驶证信息-->
+    <update id="updateDriverLicense"  parameterType="com.wx.carloadaccount.dto.UserLicenseDTO">
+      	update t_user_driver_license set 
+	      	license_number = #{licenseNumber},
+	      	user_identity_num = #{userIdentityNum},
+	      	get_license_time = #{getLicenseTime}
+      	 where  user_id = #{userId}
+    </update>
+    
+   <!-- 修改用户个人信息-->
+    <update id="updateUserInfo"  parameterType="com.wx.carloadaccount.dto.UserInfoDTO">
+      	update t_user_userinfo set 
+	      	user_name = #{userName},
+	      	nick_name = #{nickName},
+	      	user_sex = #{userSex},
+	      	user_birthday = #{userBirthday},
+	      	user_identity_num = #{userIdentityNum},
+	      	user_address = #{userAddress}
+      	 where  user_id = #{id}
+    </update>
+    
+    <!--修改用户会员信息-->
+    <update id="updateUserList" >
+      	update t_user_userlist  set 
+	    user_phone = #{userPhone}
+    	where id = #{userId}
+    </update> 
+</mapper>
+
+

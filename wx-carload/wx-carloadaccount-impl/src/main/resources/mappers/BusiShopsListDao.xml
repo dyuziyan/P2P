@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.carloadaccount.dao.BusiShopsListDao">
+   
+    <sql id="limitSql">
+		LIMIT #{startRow},#{rows}
+	</sql>
+     
+    <!-- 查询商家 -->
+     <select id="queryBusiShopsList" parameterType="map" resultType="map">
+		SELECT id, busi_shop_poi_id busiShopPoiId,busi_shop_name busiShopName,address_detail addressDetail,
+	 	link_phone linkPhone,link_tel linkTel,busi_shop_pic_url busiShopPicUrl,busi_begin_time busiBeginTime,
+		busi_end_time busiEndTime,busi_shop_latitude busiShopLatitude,busi_shop_longitude busiShopLongitude,prmy_oper_brand prmyOperBrand
+	 	FROM t_busi_shops_list   
+		<where>
+			busi_shop_state = 1
+			<if test="prmyOperBrand != null and prmyOperBrand !='' ">  
+	            	and prmy_oper_brand = #{prmyOperBrand}   
+	     	</if>  
+	     	 <if test="province != null and province !='' ">  
+	            	and province = #{province}   
+	     	</if>  
+	     	<if test="city != null and city !='' ">  
+	            	and city = #{city}
+	     	</if>  
+	     	<if test="country != null and country !=''">  
+	            	and country = #{country}   
+	     	</if> 
+	     	<if test="id != null and id !=''">  
+	            	and id = #{id}   
+	     	</if>   
+	    </where>
+			<if test="startRow !=null and rows!=null">
+				<include refid="limitSql"></include>
+			</if>
+	</select>
+	
+	<!-- 查询商家图册 -->
+	<select id="queryBusiShopsPictures" parameterType="map" resultType="map">
+		SELECT id,busi_shop_id busiShopId,pict_url_source pictUrlMin FROM 	t_busi_shop_pictures 
+		<where>
+			1=1
+	     	<if test="busiShopId != null and busiShopId !=''  and busiShopId !='null'">  
+	            	and busi_shop_id = #{busiShopId}   
+	     	</if>   
+	    </where>
+	</select>
+	
+	<!-- 查询商家可预约时间段（排除某些特定日期不可预约时间段） -->
+	<select id="queryAppointTime"  resultType="map">
+		select t.id,t.busi_shop_id busiShopId,T.appoint_time_part appointTimePart,T.discount_rate discountRate,
+		appoint_begin_time appointBeginTime,appoint_end_time appointEndTime,floating_amount floatingAmount
+		from t_busi_shop_appoint_time t where t.is_valid = 1 and t.is_del = 0  
+		<if test="busiShopId != null and busiShopId !=''  and busiShopId !='null'">  
+	    	and t.busi_shop_id = #{busiShopId}   
+	    </if> 
+		and t.id not in(select o.appoint_time_id from t_busi_shop_appoint_tm_operlog o 
+		where o.is_valid = 1 and o.is_del = 0 
+		<if test="busiShopId != null and busiShopId !=''  and busiShopId !='null'">  
+	    	and o.busi_shop_id = #{busiShopId} 
+	    </if>
+		and date_format(o.target_time,'%Y-%m-%d') = date_format(#{targetTime} ,'%Y-%m-%d'))
+	</select>
+	
+	<!-- 查询商家老板(明星老板) -->
+	<select id="queryShopBossInfo"  resultType="map">
+		select busi_shop_id busiShopId,boss_name bossName,boss_picture_url bossPictureUrl,
+		boss_phone bossPhone,boss_intro bossIntro from t_busi_shop_boss_info 
+		<where>
+			is_del = 0
+	     	<if test="busiShopId != null and busiShopId !=''  and busiShopId !='null'">  
+	            	and busi_shop_id = #{busiShopId}   
+	     	</if>   
+	    </where>
+	</select>
+</mapper>
+
+

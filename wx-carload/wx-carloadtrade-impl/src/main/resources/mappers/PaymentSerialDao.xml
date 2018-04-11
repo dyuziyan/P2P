@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.carloadtrade.dao.ShopsPaymentDao">
+   
+    <sql id="limitSql">
+		LIMIT #{startRow},#{rows}
+	</sql>
+	
+	<!-- 查询支付结算方式 -->
+     <select id="queryPaymentList"  resultType="map">
+		select id,pay_type_code payTypeCode,pay_type_name payTypeName,pay_type_pic_url payTypePicUrl
+		FROM  t_base_payment_list    P where  	pay_type_state = 1 AND is_del = 0 
+	</select>
+	
+	<!-- 生成支付流水单 -->
+     <insert id="savePaymentSerial"  parameterType = "com.wx.carloadtrade.dto.OrderPaymentSerialDto" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_order_main_payment_serial  (
+			pay_num,main_order_num,goods_desc,pay_type_code,pay_type_name,pay_account_name,pay_account_num
+			,payee_account_num,payee_account_name,pay_amount,factorage,pay_state,remark,pay_time
+		)
+		VALUES(
+			#{payNum},#{mainOrderNum},#{goodsDesc},#{payTypeCode},#{payTypeName},#{payAccountName},#{payAccountNum},
+			#{payeeAccountNum},#{payeeAccountName},#{payAmount},#{factorage},#{payState},#{remark},now()
+		)
+	</insert>
+	
+	<!-- 查询支付流水单 -->
+     <select id="queryPaymentSerial"  resultType="map">
+		select id,pay_num payNum,main_order_num mainOrderNum,pay_type_code payTypeCode,
+			pay_type_name payTypeName,pay_amount payAmount,pay_state payState,pay_time payTime
+		 from  t_order_main_payment_serial  
+		  WHERE is_del = 0
+		 	<if test="payNum != null and payNum !=''">
+				and pay_num = #{payNum}
+			</if>
+			<if test="payTypeCode != null and payTypeCode !=''">
+				and pay_type_code = #{payTypeCode}
+			</if>
+			<if test="mainOrderNum != null and mainOrderNum !=''">
+				 and main_order_num = #{mainOrderNum}
+			</if>
+	</select>
+	
+	<!-- 修改主订单支付流水状态 -->
+     <update id="udpateMainPaymentSerial" >
+      	update 	t_order_main_payment_serial 
+      	<set>
+	      	 pay_state = #{payState},pay_time = now()
+      	</set>
+      	<where>
+      		pay_num = #{payNum} 
+      	</where>
+    </update>
+    
+     <update id="deletePaymentSerial" >
+      	update 	t_order_main_payment_serial 
+      	<set>
+	      	 is_del = 1
+      	</set>
+      	<where>
+      		main_order_num = #{mainOrderNum} 
+      	</where>
+    </update>
+    
+</mapper>
+
+

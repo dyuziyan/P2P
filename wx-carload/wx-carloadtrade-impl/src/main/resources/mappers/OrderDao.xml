@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.carloadtrade.dao.OrderDao">
+   
+    <sql id="limitSql">
+		LIMIT #{startRow},#{rows}
+	</sql>
+	
+     <!--                      主订单 start                 -->
+     <!-- 生成主订单 -->
+     <insert id="saveOrderMainList"  parameterType="com.wx.carloadtrade.dto.OrderMainListDto"  useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_order_main_list(
+			main_order_num,order_type,user_id,busi_shop_id,busi_shop_name,busi_shop_address,busi_shop_phone,
+			order_state,pay_state,receiver_name,receiver_sex,receiver_phone,province,city,country,street,
+			adress_detail,is_door_service,user_car_id,car_brand_name,car_brand_type,car_modle_name,
+			car_yearstyle_name,car_number,car_run_km,car_buy_time,pay_type_code,pay_type_name,
+			invoice_type_code,invoice_title,market_total_price,goods_total_price,man_hour_fee,
+			discount_price,door_service_price,pay_amount,order_total_price,appoint_time_id,
+			appointment_time,order_time,pay_time,car_fetch_time,car_deliver_time,car_fetch_address,
+			car_deliver_address,fetch_deliver_state ,is_fetch_deliver_addr_same,
+			user_remark,busi_shop_remark,order_input_type
+		)
+		VALUES(
+			#{mainOrderNum},#{orderType},#{userId},#{busiShopId},#{busiShopName},#{busiShopAddress},#{busiShopPhone},
+			#{orderState},#{payState},#{receiverName},#{receiverSex},#{receiverPhone},#{province},#{city},#{country},#{street},
+			#{adressDetail},#{isDoorService},#{userCarId},#{carBrandName},#{carBrandType},#{carModleName},
+			#{carYearstyleName},#{carNumber},#{carRunKm},#{carBuyTime},#{payTypeCode},#{payTypeName},
+			#{invoiceTypeCode},#{invoiceTitle},#{marketTotalPrice},#{goodsTotalPrice},#{manHourFee},
+			#{discountPrice},#{doorServicePrice},#{payAmount},#{orderTotalPrice},#{appointTimeId},
+			#{appointmentTime},now(),#{payTime},#{carFetchTime},#{carDeliverTime},#{carFetchAddress},      
+			#{carDeliverAddress},#{fetchDeliverState},#{isFetchDeliverAddrSame},
+			#{userRemark},#{busiShopRemark},#{orderInputType}
+		)
+	</insert>
+
+	<!-- 查询主订单 -->
+	<select id="queryOrderMainList" resultType="com.wx.carloadtrade.dto.OrderMainListDto">
+		select m.order_type orderType,m.order_state orderState,s.busi_shop_name busiShopName,
+		m.car_brand_name carBrandName,m.order_total_price orderTotalPrice,
+		m.appointment_time appointmentTime, m.main_order_num mainOrderNum,m.receiver_name
+		receiverName,m.receiver_phone receiverPhone, c.car_number carNumber,
+		m.man_hour_fee manHourFee,m.discount_price discountPrice,s.address_detail busiShopAddress,
+		m.order_total_price orderTotalPrice,concat(c.car_brand,c.car_yearstyle ,c.car_modle) as carinfo,
+		c.car_run_km carRunKm,
+		(CASE WHEN m.order_state = 1 THEN '待支付'
+		WHEN m.order_state = 2 THEN '已取消'
+		WHEN m.order_state = 3 THEN '服务中'
+		WHEN m.order_state = 4 THEN '退款中'
+		WHEN m.order_state = 5 THEN '退款已取消'
+		WHEN m.order_state = 6 THEN '退款已拒绝'
+		WHEN m.order_state = 7 THEN '已退款'
+		WHEN m.order_state = 8 THEN '已完成'
+		ELSE '' END ) as orderStateName,
+		(CASE WHEN m.order_type = 'BST001' THEN '保养订单'
+		WHEN m.order_type = 'BST002' THEN '养护订单'
+		WHEN m.order_type = 'BST003' THEN '维修订单'
+		ELSE '' END ) as orderTypeName,m.is_door_service isDoorService,m.car_fetch_address carFetchAddress,
+		m.car_deliver_address carDeliverAddress,m.door_service_price doorServicePrice,m.pay_state payState,
+		o.live_state liveState,o.play_url playUrl
+		FROM t_order_main_list m left join t_user_carlist c
+		on m.user_car_id = c.id
+		left join t_busi_shops_list s
+		on m.busi_shop_id = s.id
+		left join t_order_live_online_list o
+		on m.main_order_num = o.main_order_num
+		<where>
+			1=1
+			<if test="userId != null and userId !=''">
+				and m.user_id = #{userId}
+			</if>
+			<if test="mainOrderNum != null and mainOrderNum !=''">
+				and m.main_order_num = #{mainOrderNum}
+			</if>
+			<if test="orderState != null and orderState !=''">
+				and m.order_state in(${orderState})
+			</if>
+		</where>
+		 order by m.id desc
+		 <if test="startRow !=null and rows!=null">
+				<include refid="limitSql"></include>
+		</if>
+	</select>
+	<!--                       主订单 end                          -->
+	
+	<!--                         保养订单 start                            -->
+	
+	<!-- 生成保养订单 -->
+     <insert id="saveOrderMaintainList"  parameterType="com.wx.carloadtrade.dto.OrderMainListDto"  useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_order_maintain_list(
+		main_order_num,order_num,user_id,busi_shop_id,busi_shop_name,busi_shop_address,busi_shop_phone,
+		order_state,pay_state,receiver_name,receiver_sex,receiver_phone,province,city,country,street,
+		adress_detail,is_door_service,user_car_id,car_brand_name,car_brand_type,car_modle_name,
+		car_yearstyle_name,car_number,car_run_km,car_buy_time,pay_type_code,pay_type_name,
+		invoice_type_code,invoice_title,market_total_price,goods_total_price,man_hour_fee,
+		discount_price,door_service_price,pay_amount,order_total_price,
+		appointment_time,order_time,pay_time,car_fetch_time,car_deliver_time,car_fetch_address,
+		car_deliver_address,fetch_deliver_state ,is_fetch_deliver_addr_same,
+		user_remark,busi_shop_remark,order_input_type
+		)
+		
+		VALUES(
+		#{mainOrderNum},#{orderNum},#{userId},#{busiShopId},#{busiShopName},#{busiShopAddress},#{busiShopPhone},
+		#{orderState},#{payState},#{receiverName},#{receiverSex},#{receiverPhone},#{province},#{city},#{country},#{street},
+		#{adressDetail},#{isDoorService},#{userCarId},#{carBrandName},#{carBrandType},#{carModleName},
+		#{carYearstyleName},#{carNumber},#{carRunKm},#{carBuyTime},#{payTypeCode},#{payTypeName},
+		#{invoiceTypeCode},#{invoiceTitle},#{marketTotalPrice},#{goodsTotalPrice},#{manHourFee},
+		#{discountPrice},#{doorServicePrice},#{payAmount},#{orderTotalPrice},
+		#{appointmentTime},now(),#{payTime},#{carFetchTime},#{carDeliverTime},#{carFetchAddress},      
+		#{carDeliverAddress},#{fetchDeliverState},#{isFetchDeliverAddrSame},
+		#{userRemark},#{busiShopRemark},#{orderInputType}
+		)
+	</insert>
+	
+	<!-- 生成保养订单详情 -->
+	<insert id="saveOrderMaintainDetails"  parameterType="java.util.List">
+		INSERT INTO t_order_maintain_details (main_order_num,order_num,user_id,service_pro_num,goods_id,goods_info,
+		unit_price,buy_count,market_price,busi_price,settle_price,is_additional,create_time,man_hour_fee)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator="," >  
+        	(#{item.mainOrderNum},#{item.orderNum},#{item.userId},#{item.serviceProNum},#{item.goodsId},#{item.goodsInfo},
+        	#{item.unitPrice},#{item.buyCount},#{item.marketPrice},#{item.busiPrice},#{item.settlePrice},#{item.isAdditional},now(),#{item.manHourFee})  
+    	</foreach>  
+	</insert>
+	
+	<!-- 查询保养订单详情-->
+	<select id="queryOrderMaintainDetails"  resultType="map">
+	select service_pro_num serviceProNum,goods_info goodsInfo,unit_price unitPrice,
+		buy_count buyCount from t_order_maintain_details 
+		<where>
+			user_id = #{userId}
+			and main_order_num = #{mainOrderNum}
+	    </where>
+	</select>
+	
+	<!-- 查询养护订单 -->
+	<select id="queryOrderMaintain"  resultType="com.wx.carloadtrade.dto.OrderMainListDto">
+		select id,main_order_num mainOrderNum,order_num orderNum,user_id userId,order_state orderState,
+		pay_state payState from t_order_maintain_list 
+		<where>
+			main_order_num = #{mainOrderNum}
+	    </where>
+	</select>
+	
+	<!--                           保养订单 end                     -->
+	
+	
+	
+	<!--                    养护订单 start                        -->
+	<!-- 生成养护订单 -->
+     <insert id="saveOrderCareList"  parameterType="com.wx.carloadtrade.dto.OrderMainListDto"  useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_order_care_list (
+			main_order_num,order_num,user_id,busi_shop_id,busi_shop_name,busi_shop_address,busi_shop_phone,
+			order_state,pay_state,receiver_name,receiver_sex,receiver_phone,province,city,country,street,
+			adress_detail,is_door_service,user_car_id,car_brand_name,car_brand_type,car_modle_name,
+			car_yearstyle_name,car_number,car_run_km,car_buy_time,pay_type_code,pay_type_name,
+			invoice_type_code,invoice_title,market_total_price,goods_total_price,man_hour_fee,
+			discount_price,door_service_price,pay_amount,order_total_price,
+			appointment_time,order_time,pay_time,car_fetch_time,car_deliver_time,car_fetch_address,
+			car_deliver_address,fetch_deliver_state ,is_fetch_deliver_addr_same,
+			user_remark,busi_shop_remark,order_input_type
+		)
+		
+		VALUES(
+			#{mainOrderNum},#{orderNum},#{userId},#{busiShopId},#{busiShopName},#{busiShopAddress},#{busiShopPhone},
+			#{orderState},#{payState},#{receiverName},#{receiverSex},#{receiverPhone},#{province},#{city},#{country},#{street},
+			#{adressDetail},#{isDoorService},#{userCarId},#{carBrandName},#{carBrandType},#{carModleName},
+			#{carYearstyleName},#{carNumber},#{carRunKm},#{carBuyTime},#{payTypeCode},#{payTypeName},
+			#{invoiceTypeCode},#{invoiceTitle},#{marketTotalPrice},#{goodsTotalPrice},#{manHourFee},
+			#{discountPrice},#{doorServicePrice},#{payAmount},#{orderTotalPrice},
+			#{appointmentTime},now(),#{payTime},#{carFetchTime},#{carDeliverTime},#{carFetchAddress},      
+			#{carDeliverAddress},#{fetchDeliverState},#{isFetchDeliverAddrSame},
+			#{userRemark},#{busiShopRemark},#{orderInputType}
+		)
+	</insert>
+	
+	<!-- 生成养护订单详情 -->
+	<insert id="saveOrderCareDetails"  parameterType="java.util.List">
+		INSERT INTO t_order_care_details (main_order_num,order_num,user_id,service_pro_num,goods_id,goods_info,
+		unit_price,buy_count,market_price,busi_price,settle_price,is_additional,create_time,man_hour_fee)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator="," >  
+        	(#{item.mainOrderNum},#{item.orderNum},#{item.userId},#{item.serviceProNum},#{item.goodsId},#{item.goodsInfo},
+        	#{item.unitPrice},#{item.buyCount},#{item.marketPrice},#{item.busiPrice},#{item.settlePrice},#{item.isAdditional},now(),#{item.manHourFee})  
+    	</foreach>  
+	</insert>
+	
+	<!-- 查询养护订单详情 -->
+	<select id="queryOrderCareDetails"  resultType="map">
+		select service_pro_num serviceProNum,goods_info goodsInfo,unit_price unitPrice,
+		buy_count buyCount
+		from t_order_care_details 
+		<where>
+			user_id = #{userId}
+			and main_order_num = #{mainOrderNum}
+	    </where>
+	</select>
+	
+	<!-- 查询养护订单 -->
+	<select id="queryOrderCare"  resultType="com.wx.carloadtrade.dto.OrderMainListDto">
+		select id,main_order_num mainOrderNum,order_num orderNum,user_id userId,order_state orderState,
+		pay_state payState from t_order_care_list 
+		<where>
+			main_order_num = #{mainOrderNum}
+	    </where>
+	</select>
+	
+	<!--                 养护订单 end                         -->
+	
+	
+	<!--                    维修订单 start                           -->
+	<!-- 生成维修订单 -->
+     <insert id="saveOrderRepairList"  parameterType="com.wx.carloadtrade.dto.OrderMainListDto"  useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_order_repair_list  (
+			main_order_num,order_num,user_id,busi_shop_id,busi_shop_name,busi_shop_address,busi_shop_phone,
+			order_state,pay_state,receiver_name,receiver_sex,receiver_phone,province,city,country,street,
+			adress_detail,is_door_service,user_car_id,car_brand_name,car_brand_type,car_modle_name,
+			car_yearstyle_name,car_number,car_run_km,car_buy_time,pay_type_code,pay_type_name,
+			invoice_type_code,invoice_title,market_total_price,goods_total_price,man_hour_fee,
+			discount_price,door_service_price,pay_amount,order_total_price,
+			appointment_time,order_time,pay_time,car_fetch_time,car_deliver_time,car_fetch_address,
+			car_deliver_address,fetch_deliver_state ,is_fetch_deliver_addr_same,
+			user_remark,busi_shop_remark,order_input_type
+		)
+		
+		VALUES(
+			#{mainOrderNum},#{orderNum},#{userId},#{busiShopId},#{busiShopName},#{busiShopAddress},#{busiShopPhone},
+			#{orderState},#{payState},#{receiverName},#{receiverSex},#{receiverPhone},#{province},#{city},#{country},#{street},
+			#{adressDetail},#{isDoorService},#{userCarId},#{carBrandName},#{carBrandType},#{carModleName},
+			#{carYearstyleName},#{carNumber},#{carRunKm},#{carBuyTime},#{payTypeCode},#{payTypeName},
+			#{invoiceTypeCode},#{invoiceTitle},#{marketTotalPrice},#{goodsTotalPrice},#{manHourFee},
+			#{discountPrice},#{doorServicePrice},#{payAmount},#{orderTotalPrice},
+			#{appointmentTime},now(),#{payTime},#{carFetchTime},#{carDeliverTime},#{carFetchAddress},      
+			#{carDeliverAddress},#{fetchDeliverState},#{isFetchDeliverAddrSame},
+			#{userRemark},#{busiShopRemark},#{orderInputType}
+		)
+	</insert>
+	
+	<!-- 生成维修订单详情 -->
+	<insert id="saveOrderRepairDetails"  parameterType="java.util.List">
+		INSERT INTO t_order_repair_details (main_order_num,order_num,user_id,service_pro_num,goods_id,goods_info,
+		unit_price,buy_count,market_price,busi_price,settle_price,is_additional,create_time,man_hour_fee)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator="," >  
+        	(#{item.mainOrderNum},#{item.orderNum},#{item.userId},#{item.serviceProNum},#{item.goodsId},#{item.goodsInfo},
+        	#{item.unitPrice},#{item.buyCount},#{item.marketPrice},#{item.busiPrice},#{item.settlePrice},#{item.isAdditional},now(),#{item.manHourFee})  
+    	</foreach>  
+	</insert>
+	
+	<!-- 查询维修订单详情 -->
+	<select id="queryOrderRepairDetails"  resultType="map">
+		select service_pro_num serviceProNum,goods_info goodsInfo,unit_price unitPrice,
+		buy_count buyCount
+		 from t_order_repair_details 
+		<where>
+			user_id = #{userId}
+			and main_order_num = #{mainOrderNum}
+	    </where>
+	</select>
+	
+	<!-- 查询维修订单 -->
+	<select id="queryOrderRepair"  resultType="com.wx.carloadtrade.dto.OrderMainListDto">
+		select id,main_order_num mainOrderNum,order_num orderNum,user_id userId,order_state orderState,
+		pay_state payState
+		 from t_order_repair_list 
+		<where>
+			main_order_num = #{mainOrderNum}
+	    </where>
+	</select>
+	
+	<!--                       维修订单 end                      -->
+	
+	<!-- 查询 汽车服务项目 -->
+     <select id="queryCarServicePart" resultType="carServicePart">
+		select P.service_pro_num serviceProNum,P.service_pro_market_price serviceProMarketPrice,
+		P.service_pro_busi_price serviceProBusiPrice,P.man_hour_fee manHourFee,
+		b.service_type_code serviceTypeCode,b.service_type_name serviceTypeName,b.service_pro_name serviceProName
+		FROM  t_car_car_service_part  P left join t_car_car_service_base b
+		on P.service_pro_num = b.service_pro_num
+		<where>
+		1=1
+		 <if test="ids != null and ids !=''">  
+	          and P.id in(${ids})
+	     </if>
+	     
+	     <if test="serviceProNum != null and serviceProNum !=''">  
+	          and P.service_pro_num in(${serviceProNum})
+	     </if>
+	    </where>
+	</select>
+	
+	
+	<!-- 获取时间段优惠金额  -->
+	<select id="getAppointTimeDiscount"  resultType="map">
+		select discount_rate discountRate,floating_amount floatingAmount
+		from t_busi_shop_appoint_time t where t.is_valid = 1 and t.is_del = 0  
+	    and t.id = #{appointTimeId}   
+	</select>
+	
+	
+    
+    <!-- 修改主订单状态或支付状态 -->
+     <update id="udpateMainOrderStatus" >
+      	update 	t_order_main_list
+      	<set>
+	      	<if test="orderState != null and orderState !=''">  
+	      	 	order_state = #{orderState}
+	      	</if> 
+	      	<if test="orderState != null and orderState !='' and payState != null and payState !=''">  
+	      		,
+	      	</if>
+	      	<if test="payState != null and payState !=''">  
+	      	 	pay_state = #{payState}
+	      	</if> 
+      	</set>
+      	<where>
+      		main_order_num = #{mainOrderNum} 
+      	</where>
+    </update>
+    
+    <!-- 修改养护订单状态或支付状态 -->
+     <update id="udpateCareOrderStatus" >
+      	update t_order_care_list
+      	<set>
+	      	<if test="orderState != null and orderState !=''">  
+	      	 	order_state = #{orderState}
+	      	</if> 
+	      	<if test="orderState != null and orderState !='' and payState != null and payState !=''">  
+	      		,
+	      	</if>
+	      	<if test="payState != null and payState !=''">  
+	      	 	pay_state = #{payState}
+	      	</if> 
+      	</set>
+      	<where>
+      		main_order_num = #{mainOrderNum} 
+      	</where>
+    </update>
+    
+    <!-- 修改保养订单状态或支付状态 -->
+     <update id="udpateMaintainOrderStatus" >
+      	update 	t_order_maintain_list
+      	<set>
+	      	<if test="orderState != null and orderState !=''">  
+	      	 	order_state = #{orderState}
+	      	</if> 
+	      	<if test="orderState != null and orderState !='' and payState != null and payState !=''">  
+	      		,
+	      	</if>
+	      	<if test="payState != null and payState !=''">  
+	      	 	pay_state = #{payState}
+	      	</if> 
+      	</set>
+      	<where>
+      		main_order_num = #{mainOrderNum}
+      	</where>
+    </update>
+    
+    <!-- 修改维修订单状态或支付状态 -->
+     <update id="udpateRepairOrderStatus" >
+      	update t_order_repair_list
+      	<set>
+	      	<if test="orderState != null and orderState !=''">  
+	      	 	order_state = #{orderState}
+	      	</if> 
+	      	<if test="orderState != null and orderState !='' and payState != null and payState !=''">  
+	      		,
+	      	</if>
+	      	<if test="payState != null and payState !=''">  
+	      	 	pay_state = #{payState}
+	      	</if> 
+      	</set>
+      	<where>
+      		main_order_num = #{mainOrderNum} 
+      	</where>
+    </update>
+	
+	
+	<!-- 养护-订单操作日志 -->
+	<insert id="saveCareOrderLog" useGeneratedKeys="true">
+		INSERT INTO t_order_care_operation_log   (main_order_num,order_num,handle_type,remark,handle_time)
+		VALUES(#{mainOrderNum},#{orderNum},#{handleType},#{remark},now())
+	</insert>
+	
+	<!-- 保养-订单操作日志 -->
+	<insert id="saveMaintainOrderLog" useGeneratedKeys="true">
+		INSERT INTO t_order_maintain_operation_log   (main_order_num,order_num,handle_type,remark,handle_time)
+		VALUES(#{mainOrderNum},#{orderNum},#{handleType},#{remark},now())
+	</insert>
+	
+	<!-- 维修-订单操作日志 -->
+	<insert id="saveRepairOrderLog" useGeneratedKeys="true">
+		INSERT INTO t_order_repair_operation_log  (main_order_num,order_num,handle_type,remark,handle_time)
+		VALUES(#{mainOrderNum},#{orderNum},#{handleType},#{remark},now())
+	</insert>
+	
+	<!-- 生成退款订单 -->
+	<insert id="saveOrderRefundList" useGeneratedKeys="true" parameterType="map" >
+		INSERT INTO t_order_refund_list (refund_num,order_num,apply_time,refund_amount,
+		refund_state,user_id,refund_reason,refund_desc)
+		VALUES(#{refundNum},#{orderNum},now(),#{refundAmount},0,#{userId},#{refundReason},#{refundDesc})
+	</insert>
+</mapper>
+
+

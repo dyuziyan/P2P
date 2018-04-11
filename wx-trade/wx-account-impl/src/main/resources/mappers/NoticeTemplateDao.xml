@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.account.dao.NoticeTemplateDao">
+	
+	<!-- 查询消息模版 -->
+	<select id="queryMsgTemplate" parameterType="string" resultType="string">
+		select t.template from t_approve_notice_template t where t.status=1 and t.nid=#{nid}
+	</select>
+
+</mapper>

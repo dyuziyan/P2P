@@ -1,0 +1,83 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.wx</groupId>
+		<artifactId>wx-carload-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../wx-carload-parent</relativePath>
+	</parent>
+	<artifactId>wx-carloadmessage-impl</artifactId>
+	<properties>
+		<skip-deploy>true</skip-deploy>
+		<skip-source>true</skip-source>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>com.wx</groupId>
+			<artifactId>wx-carloadmessage-api</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.wx</groupId>
+			<artifactId>wx-support</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency> 
+			<groupId>my.comp</groupId> 
+ 			<artifactId>comp-http</artifactId> 
+		</dependency> 
+<!-- 下列公共方法jar包暂不编码，实际编程再进行抽取  -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>my.comp</groupId> -->
+<!-- 			<artifactId>comp-http</artifactId> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>my.comp</groupId> -->
+<!-- 			<artifactId>comp-freemarker</artifactId> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>my.comp</groupId> -->
+<!-- 			<artifactId>comp-mail</artifactId> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>my.comp</groupId> -->
+<!-- 			<artifactId>comp-cache</artifactId> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>my.comp</groupId> -->
+<!-- 			<artifactId>comp-sms</artifactId> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>my.comp</groupId> -->
+<!-- 			<artifactId>comp-weixin</artifactId> -->
+<!-- 			<version>1.0.0-SNAPSHOT</version> -->
+<!-- 		</dependency> -->
+		
+		<dependency>
+			<groupId>com.wx</groupId>
+			<artifactId>wx-carloadbase-api</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.wx</groupId>
+			<artifactId>wx-carloadmember-api</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>my.comp</groupId>
+			<artifactId>comp-sms</artifactId>
+		</dependency>
+	</dependencies>
+
+</project>

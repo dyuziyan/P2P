@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.depotbank.dao.BankRequestDao">
+	<!-- 保存银行请求信息 -->
+	<insert id="saveBankRequest" parameterType="hashmap" keyProperty="id" useGeneratedKeys="true">
+		insert into t_bank_request
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="card_no != null">
+				card_no,
+			</if>
+			<if test="customer_no != null">
+				customer_no,
+			</if>
+			<if test="uuid != null">
+				uuid,
+			</if>
+			<if test="service != null">
+				service,
+			</if>
+			<if test="service_desc != null">
+				service_desc,
+			</if>
+			<if test="request_data != null">
+				request_data,
+			</if>
+			<if test="serialNumber != null">
+				serialNumber,
+			</if>
+			<if test="custom != null and custom != 'null' and custom != ''">
+				custom,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="card_no != null">
+				#{card_no,jdbcType=VARCHAR},
+			</if>
+			<if test="customer_no != null">
+				#{customer_no,jdbcType=VARCHAR},
+			</if>
+			<if test="uuid != null">
+				#{uuid,jdbcType=VARCHAR},
+			</if>
+			<if test="service != null">
+				#{service,jdbcType=VARCHAR},
+			</if>
+			<if test="service_desc != null">
+				#{service_desc,jdbcType=VARCHAR},
+			</if>
+			<if test="request_data != null">
+				#{request_data,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="serialNumber != null">
+				#{serialNumber,jdbcType=VARCHAR},
+			</if>
+			<if test="custom != null and custom != 'null' and custom != ''">
+				#{custom,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+	
+	<!-- 保存银行响应信息 -->
+	<insert id="saveBankResponse" parameterType="hashmap" keyProperty="id" useGeneratedKeys="true">
+		insert into t_bank_response(uuid,sequence_id,order_id,responce_code,responce_msg,responce_data)
+		values(#{uuid},#{sequence_id},#{order_id},#{responce_code},#{responce_msg},#{responce_data})
+	</insert>
+	
+	<!-- 根据serialNumber查询记录数 -->
+	<select id="queryBankRequestBySerialNumber" parameterType="string" resultType="int">
+		select count(1) from t_bank_request t where t.serialNumber=#{serialNumber}
+	</select>
+</mapper>

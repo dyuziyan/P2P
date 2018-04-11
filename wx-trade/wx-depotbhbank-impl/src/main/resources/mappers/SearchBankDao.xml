@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.depotbank.dao.SearchBankDao">
+	 <insert id="saveFileBankInvest" parameterType="java.util.List">  
+        insert into  t_wx_bank_invest_file (TransId,MercId,PlaCustId,TransAmt,BorrowId,CreDt,CreTm,OrdSts,MerBillNo)  values  
+        <foreach collection="list" item="item" index="index" separator=",">  
+            (#{item.TransId},#{item.MercId},#{item.PlaCustId} ,#{item.TransAmt},#{item.BorrowId},#{item.CreDt},#{item.CreTm},#{item.OrdSts},#{item.MerBillNo} 
+            )  
+        </foreach>  
+    </insert>
+    
+    <insert id="saveFileBank" parameterType="java.util.List">  
+        insert into  t_wx_bank_charge_wdc_redpaper_file(OrdNo,CreDt,TransAmt,FeeAmt,PlaCustId,MerBillNo,ChargeCorg,type,FalRsn)  values  
+        <foreach collection="list" item="item" index="index" separator=",">  
+            (#{item.OrdNo},#{item.CreDt},#{item.TransAmt} ,#{item.FeeAmt},#{item.PlaCustId},#{item.MerBillNo},#{item.ChargeCorg},#{item.type},#{item.FalRsn} 
+            )  
+        </foreach>  
+    </insert>  
+    
+    <delete id="deleteBankInvestToDate" parameterType="java.util.List">
+        DELETE FROM t_wx_bank_invest_file WHERE TransId in 
+        <foreach collection="list" item="item" index="index"  open="(" separator="," close=")" >  
+            #{item}  
+        </foreach>
+    </delete>
+    
+    <delete id="deleteFileBankToDate" parameterType="java.util.List">
+    	DELETE FROM t_wx_bank_charge_wdc_redpaper_file WHERE OrdNo in 
+			<foreach collection="list" item="item" index="index"   open="(" separator="," close=")" >  
+	            #{item}  
+	        </foreach>
+    </delete>
+    
+     <update id="resettingWithdraw"  parameterType="java.util.List">  
+          <foreach collection="list" item="item" index="index" open="" close="" separator=";">  
+                update t_withdraw
+                <set>  
+                  compareState=0
+                </set>  
+                where serialNumber= #{item}
+         </foreach>  
+    </update>  
+      <update id="resettingInvest"  parameterType="java.util.List">  
+          <foreach collection="list" item="item" index="index" open="" close="" separator=";">  
+                update t_invest
+                <set>  
+                  compareState=0
+                </set>  
+                where serialNumber= #{item}
+         </foreach>  
+    </update>  
+      <update id="resettingRecharge"  parameterType="java.util.List">  
+          <foreach collection="list" item="item" index="index" open="" close="" separator=";">  
+                update t_recharge_detail
+                <set>  
+                  compareState=0
+                </set>  
+                where serialNumber= #{item}
+         </foreach>  
+    </update>  
+      <update id="resettingRedpacket"  parameterType="java.util.List">  
+          <foreach collection="list" item="item" index="index" open="" close="" separator=";">  
+                update t_fundrecord
+                <set>  
+                  compareState=0
+                </set>  
+                where serial_number=(select serialNumber from t_bank_request where mer_bill_no= #{item})
+         </foreach>  
+    </update>  
+</mapper>

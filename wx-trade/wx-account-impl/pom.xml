@@ -1,0 +1,49 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.wx</groupId>
+		<artifactId>wx-trade-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../wx-trade-parent</relativePath>
+	</parent>
+	<artifactId>wx-account-impl</artifactId>
+	<name>wx-account</name>
+	<dependencies>
+		<dependency>
+			<groupId>com.wx</groupId>
+			<artifactId>wx-support</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>my.comp</groupId> -->
+<!-- 			<artifactId>comp-event</artifactId> -->
+<!-- 			<version>${comp-version}</version> -->
+<!-- 		</dependency> -->
+		<dependency>
+			<groupId>com.wx</groupId>
+			<artifactId>wx-account-api</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.wx</groupId>
+			<artifactId>wx-depotbank-api</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+</project>

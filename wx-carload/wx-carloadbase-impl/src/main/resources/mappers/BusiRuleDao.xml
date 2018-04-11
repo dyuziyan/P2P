@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.carloadbase.dao.BusiRuleDao">
+
+	<resultMap type="busiRule" id="busiRule" autoMapping="true">
+		<id column="id" property="id" />
+	</resultMap>
+	
+	<!-- 获得基础配置信息 -->
+	<select id="get" parameterType="long" resultMap="busiRule">
+		select * from b_busi_rule where id = #{id}
+	</select>
+	<!-- 获得基础配置信息列表  -->
+	<select id="listAll" parameterType="map" resultMap="busiRule">
+		select * from b_busi_rule b
+	</select>
+	<select id="listByName" parameterType="String"  resultMap="busiRule">
+		select * from b_busi_rule b where b.type =#{type} and b.name =#{name}
+	</select>
+	<!-- 获得基础配置信息 -->
+	<select id="listByType" parameterType="String"  resultMap="busiRule">
+		select * from b_busi_rule b where b.type =#{type}
+	</select>
+	<!-- 分页获得基础配置信息列表  -->
+	<select id="list" parameterType="map" resultMap="busiRule">
+		select * from b_busi_rule b
+		<where><include refid="listCondition"/></where>
+		<if test="start !=null and start !=-1 ">
+			LIMIT #{start},#{limit}
+		</if>
+	</select>
+	<select id="count" parameterType="map" resultType="int">
+		select count(1) from b_busi_rule b
+		<where><include refid="listCondition"/></where>
+	</select>
+	
+	<sql id="listCondition">
+		<if test="type != null and type!=''">
+			and b.type like CONCAT(CONCAT('%', #{type}),'%')
+		</if>
+		<if test="name != null and name!=''">
+			and b.name like CONCAT(CONCAT('%', #{name}),'%')
+		</if>
+	</sql>
+	
+	<!-- 插入基础配置信息 多了type_id 和数据库不一致 -->
+	<insert id="create" parameterType="busiRule">
+		insert into b_busi_rule (
+			type, 
+			type_id,
+			name, 
+			value,
+			remark
+		) values (
+			#{type},
+			#{typeId},
+			#{name},
+			#{value},
+			#{remark}
+		)
+		<selectKey resultType="long" order="AFTER" keyProperty="id">
+			select LAST_INSERT_ID() as id
+		</selectKey>
+	</insert>
+	<!-- 新插入基础配置信息 -->
+	<insert id="createNew" parameterType="busiRule">
+		insert into b_busi_rule (
+			type, 
+			name, 
+			value,
+			remark
+		) values (
+			#{type},
+			#{name},
+			#{value},
+			#{remark}
+		)
+		<selectKey resultType="long" order="AFTER" keyProperty="id">
+			select LAST_INSERT_ID() as id
+		</selectKey>
+	</insert>
+	<!-- 修改基础配置信息 -->
+	<update id="update" parameterType="map">
+		update b_busi_rule b
+		<set>
+			b.id = #{id}
+			<if test="type != null">
+			,b.type = #{type}
+			</if>
+			<if test="name != null">
+			,b.name = #{name}
+			</if>
+			<if test="value!=null">
+			,b.value = #{value}
+			</if>
+			<if test="remark!=null">
+			,b.remark = #{remark}
+			</if>
+		</set>
+		<where>
+			b.id = #{id}
+		</where>
+	</update>
+	<!-- 删除基础配置信息 -->
+	<delete id="delete" parameterType="long">
+		delete from b_busi_rule where id in
+		<foreach item="id" index="index" collection="array" open="(" separator="," close=")">
+	 		#{id}
+		</foreach>
+	</delete>
+	<!-- 添加和更新前判断 -->
+	<select id="judit" parameterType="busiRule" resultType="int">
+		select count(1) from b_busi_rule b
+		where 1=1
+		<if test="type != null and type!=''">
+			and b.type = #{type}
+		</if>
+		<if test="name != null and name!=''">
+			and b.name = #{name}
+		</if>
+		<if test="id != null and id > 0 ">
+			and b.id != #{id}
+		</if>
+	</select>
+	
+</mapper>

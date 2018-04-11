@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.carloadbase.dao.CarServiceDao">
+	 <sql id="limitSql">
+		LIMIT #{startRow},#{rows}
+	</sql>
+	<!--  获取车辆服务项 -->
+	<select id="getCarServiceList" parameterType="map"  resultType="com.wx.carloadbase.dto.CarServiceDto">
+		select p.id,b.service_pro_num serviceProNum,b.service_pro_name serviceProName,
+		b.service_type_code serviceTypeCode,p.service_pro_market_price serviceProMarketPrice,
+		P.service_pro_busi_price serviceProBusiPrice,P.man_hour_fee manHourFee,p.unit_name unitName,
+		p.unit_count unitCount,p.remark remark,p.is_recommend isRecommend
+		from t_car_car_service_base b inner join t_car_car_service_part p
+		on b.service_pro_num = p.service_pro_num
+		where b.is_del = 0 and p.is_del = 0
+		<if test="serviceTypeCode != null and serviceTypeCode !=''">  
+	    	and b.service_type_code = #{serviceTypeCode}
+	    </if>
+	    <if test="provinceCode != null and provinceCode !=''">  
+	    	and p.province_code = #{provinceCode}   
+	    </if>  
+	    <if test="cityCode != null and cityCode !=''">  
+	    	and p.city_code = #{cityCode}  
+	    </if>  
+	    <if test="brandId != null and brandId !=''">  
+	    	and p.brand_id = #{brandId}   
+	    </if>  
+	    <if test="brandTypeId != null and brandTypeId !=''">  
+	    	and p.brand_type_id = #{brandTypeId}   
+	    </if>  
+	    <if test="modleId != null and modleId !=''">  
+	    	and p.modle_id = #{modleId}   
+	    </if>  
+	    <if test="yearstyleId != null and yearstyleId !=''">  
+	    	and p.yearstyle_id = #{yearstyleId}  
+	    </if>  
+	    <if test="startRow !=null and rows!=null">
+				<include refid="limitSql"></include>
+		</if>
+	</select>
+</mapper>

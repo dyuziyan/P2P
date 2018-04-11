@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.product.dao.ProductDao">
+	
+	<resultMap type="com.wx.product.dto.ProductDto" id="product" autoMapping="true"/>
+	
+	<select id="getProduct" parameterType="long" resultMap="product">
+		select id,productTitle,deadline,productAmount,hasInvestAmount,status,cashback from t_product where id= #{productId}
+	</select>
+	
+	
+</mapper>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.carloadbase.dao.AdvertDao">
+	
+	<select id="queryAdvertList"  resultType="com.wx.carloadbase.dto.AdvertDto">
+		SELECT 
+		  l.advert_id advertId,
+		  l.advert_type_id advertTypeId,
+		  l.advert_addr advertAddr,
+		  l.advert_name advertName,
+		  l.picture_url pictureUrl,
+		  l.link_url linkUrl,
+		  l.start_time startTime,
+		  l.end_time endTime,
+		  l.is_carousel isCarousel,
+		  l.is_show isShow,
+		  l.click_count clickCount,
+		  l.is_del isDel,
+		  t.advert_pic_width advertPicWidth,
+		  t.advert_pic_height advertPicHeight,
+		  advert_place_name advertPlaceName
+		FROM
+		  t_sys_public_advert_list l 
+		  INNER JOIN t_sys_public_advert_type t 
+		    ON l.advert_type_id = t.id 
+		WHERE t.is_valid = 1 
+		  AND l.is_show = 1 
+		  AND  NOW() &gt;= l.start_time AND  NOW() &lt;= l.end_time
+		<if test="advertPlaceName!=null  and advertPlaceName !='' ">
+			AND AND l.advert_place_name =  #{advertPlaceName}
+		</if>
+	</select>
+	
+</mapper>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.carloadtrade.dao.OrderRefundDao">
+	<!-- 查询退款原因类型  -->
+	<select id="queryOrderRefundReason"  resultType="com.wx.carloadtrade.dto.OrderRefundReasonDto">
+		select t.id,t.reason_name reasonName,t.reason_desc reasonDesc,t.serial_number serialNumber,
+		t.reason_state reasonState,t.create_time createTime,t.create_user_id createUserId,
+		t.create_user_name createUserName,t.is_del isDel
+	 	from t_order_refund_reason t where t.reason_state = 1 order  by t.serial_number 
+	</select>
+	
+	<!-- 生成退款单  -->
+	 <insert id="saveOrderRefundList"  parameterType="com.wx.carloadtrade.dto.OrderRefundDto"  useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_order_refund_list (
+			refund_num,order_num,apply_time,kind_type,refund_amount,refund_state,
+			user_id,refund_reason,refund_desc,refund_way,refund_type
+		)
+		VALUES(
+			#{refund_num},#{order_num},now(),#{kind_type},#{refund_amount},#{refund_state},
+			#{user_id},#{refund_reason},#{refund_desc},#{refund_way},#{refund_type}
+		)
+	</insert>
+	
+	<!-- 生成退款单-操作日志 -->
+	 <insert id="saveOrderRefundlog"    useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_order_refund_operation_log  (
+			refund_num,handle_user,handle_type,refund_amount,refund_reason,refund_desc
+		)
+		VALUES(
+			#{refundNum},#{handleUser},1,#{refundAmount},#{refundReason},#{refundDesc}
+		)
+	</insert>
+	
+	<!-- 生成退款单-退款等有效图片凭证 -->
+	 <insert id="saveOrderRefundPicture"    useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_order_refund_picture (
+			refund_num,pic_url_src,serial_number,create_time
+		)
+		VALUES(
+			#{refundNum},#{picUrlSrc},#{serialNumber},now()
+		)
+	</insert>
+	
+</mapper>

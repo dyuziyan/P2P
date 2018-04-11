@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.market.dao.ActivityDao">
+
+	<resultMap type="com.wx.market.dto.ActivityDto" id="Activity" autoMapping="true"/>
+	
+	<select id="getActiveList" parameterType="Map" resultMap="Activity">
+		select *
+		from t_wx_activity_draw
+		where 1=1
+		<if test="onTime !=null and onTime==true">
+			and now() &gt; start_time and now() &lt; end_time
+		</if>
+		<if test="handoperation !=null and handoperation==true">
+			and handoperation_cashback=1
+		</if>
+		<if test="handoperationCashBackTime !=null and handoperationCashBackTime==true">
+			and handoperation_cashback_startTime &lt; now() and handoperation_cashback_endTime &gt; now()
+		</if>
+	</select>
+	
+	<select id="getActivityById" parameterType="String" resultMap="Activity">
+		select * from t_wx_activity_draw where activity_key=#{activityId};
+	</select>
+	
+</mapper>

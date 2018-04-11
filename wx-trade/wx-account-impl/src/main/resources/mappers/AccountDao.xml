@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.account.dao.AccountDao">
+	
+	<resultMap type="com.wx.account.dto.AccountDto" id="Account" autoMapping="true"/>
+	<parameterMap type="com.wx.account.dto.AccountDto" id="Account"/>
+	
+	<select id="getAccount" parameterType="long" resultMap="Account">
+		select id,user_id,deposit_account,is_deposit_check,usable_sum,freeze_sum
+		from t_user_deposit_mng a 
+		where a.user_id = #{accountId} 
+	</select>
+	
+	<select id="getAccountForUpdate" parameterType="long" resultMap="Account">
+		select id,user_id,deposit_account,is_deposit_check,usable_sum,freeze_sum
+		from t_user_deposit_mng a 
+		where a.user_id = #{accountId} 
+		FOR UPDATE
+	</select>
+	
+	<update id="update" parameterMap="Account">
+		update t_user_deposit_mng
+		<set>
+			usable_sum = #{usable_sum},
+			freeze_sum = #{freeze_sum}
+		</set>
+		where user_id=#{user_id}
+	</update>
+	
+	<select id="getAccountByDepositId" parameterType="String" resultMap="Account">
+		select id,user_id,deposit_account,is_deposit_check,usable_sum,freeze_sum
+		from t_user_deposit_mng a 
+		where a.deposit_account = #{deposit_account} 
+	</select>
+	
+	<select id="getAccountByDepositIdForUpdate" parameterType="String" resultMap="Account">
+		select id,user_id,deposit_account,is_deposit_check,usable_sum,freeze_sum
+		from t_user_deposit_mng a 
+		where a.deposit_account = #{deposit_account} 
+		FOR UPDATE
+	</select>
+	
+	<update id="updateAccountByDepositId" parameterMap="Account">
+		update t_user_deposit_mng
+		<set>
+			usable_sum = #{usable_sum},
+			freeze_sum = #{freeze_sum}
+		</set>
+		where deposit_account=#{deposit_account}
+	</update>
+	
+
+</mapper>

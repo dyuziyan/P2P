@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wx.carloadaccount.dao.UserFeedbackDao">
+   
+    <sql id="limitSql">
+		LIMIT #{startRow},#{rows}
+	</sql>
+	<!-- 新增用户反馈信息 -->
+	<insert id="saveFeedbackInfoList"  parameterType="com.wx.carloadaccount.dto.UserFeedbackDTO"  useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_sys_feedback_info_list (feedback_num,user_id,type_code,type_name,title,content,
+		mobile_phone,qq_num,email_num,publish_time)
+		VALUES(#{feedback_num},#{user_id},#{type_code},#{type_name},#{title},#{content},#{mobile_phone},#{qq_num},#{email_num},now())
+	</insert>
+	
+	<insert id="saveFeedbackPicture"  parameterType="com.wx.carloadaccount.dto.FeedbackPictureDTO"  useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_sys_feedback_picture(feedback_num,pic_url_min,pic_url_med,pic_url_max,pic_url_src,serial_number,
+		create_time)
+		VALUES(#{feedback_num},#{pic_url_min},#{pic_url_med},#{pic_url_max},#{pic_url_src},#{serial_number},now())
+	</insert>
+</mapper>
+
+
