@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.wx</groupId>
+  <artifactId>wx-common</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <modules>
+  	<module>wx-parent</module>
+	<module>wx-support</module>
+	<module>wx-api</module>
+  </modules>
+  
+  <build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<tagBase>https://192.168.1.146/wx/wx_common/tags</tagBase>
+					<branchBase>https://192.168.1.146/wx/wx_common/branches</branchBase>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
+	<scm>
+		<connection>scm:svn:https://192.168.1.146/wx/wx_common</connection>
+		<developerConnection>scm:svn:https://192.168.1.146/wx/wx_common</developerConnection>
+	</scm>
+</project>
