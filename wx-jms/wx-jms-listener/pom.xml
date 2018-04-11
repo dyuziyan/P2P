@@ -1,0 +1,64 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.wx</groupId>
+		<version>1.0.0-SNAPSHOT</version>
+		<artifactId>wx-parent</artifactId>
+	</parent>
+	<artifactId>wx-jms-listener</artifactId>
+	<name>wx-jms-listener</name>
+	<properties>
+		<deploy-skip>true</deploy-skip>
+		<source-skip>true</source-skip>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jms</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.wx</groupId>
+			<artifactId>wx-market-api</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>my.comp</groupId>
+			<artifactId>comp-jms</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.wx</groupId>
+			<artifactId>wx-support</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>true</filtering>
+			</testResource>
+		</testResources>
+		<filters>
+			<filter>../../wx-common/build/filter-${env}.properties</filter>
+		</filters>
+	</build>
+</project>

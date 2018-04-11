@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:amq="http://activemq.apache.org/schema/core" xmlns:jms="http://www.springframework.org/schema/jms"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+	<context:component-scan base-package="my.comp.jms" />
+
+	<bean id="activemqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="userName" value="${jms.userName}" />
+		<property name="password" value="${jms.password}" />
+		<property name="brokerURL" value="${jms.brokerURL}" />
+		<property name="sendTimeout" value="${jms.sendTimeout}" />
+	</bean>
+
+	<bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory"
+		destroy-method="stop">
+		<property name="connectionFactory" ref="activemqConnectionFactory" />
+		<property name="maxConnections" value="500" />
+	</bean>
+
+	<!-- 发送消息：发布订阅模型 -->
+	<bean id="jmsTopicTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="pooledConnectionFactory" />
+		<property name="defaultDestinationName" value="TOPIC.DEFAULT" />
+		<property name="pubSubDomain" value="true" /><!-- true topic false 
+			queue -->
+		<!-- 当设置pubSubNoLocal为true时，消费者不会接收来自同一个连接的消息。因为我们在上面的配置文件中定义了连接池的最大连接数为1， 
+			因此每次使用的连接都是同一个连接，所以就消费者就接收不到消息。 只有当pubSubNoLocal为false时，消费者才能接收到来自同一个连接的消息。 -->
+		<property name="pubSubNoLocal" value="false" />
+		<property name="deliveryMode" value="2" /><!-- 是否发送之久化消息 -->
+		<property name="sessionAcknowledgeMode" value="1" /><!-- 消息事务的确认方式 -->
+		<property name="explicitQosEnabled" value="true" />  <!-- 使 deliveryMode, priority, timeToLive设置生效 -->
+		<property name="timeToLive" value="604800000" />
+		<property name="receiveTimeout" value="-1" />
+	</bean>
+
+	<!-- 发送消息：点对点模型 -->
+	<bean id="jmsQueueTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="pooledConnectionFactory" />
+		<property name="defaultDestinationName" value="QUEUE.DEFAULT" />
+		<property name="pubSubDomain" value="false" />
+		<property name="deliveryMode" value="2" />
+		<property name="sessionAcknowledgeMode" value="1" />
+		<property name="explicitQosEnabled" value="true" />
+		<property name="timeToLive" value="604800000" />
+		<property name="receiveTimeout" value="-1" />
+	</bean>
+
+	<!-- jms 日志 -->
+	<bean id="jmsLogDao" class="my.comp.jms.logger.db.JmsLogDaoImpl">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+	<bean id="jmsLogService" class="my.comp.jms.logger.db.JmsLogServiceImpl">
+		<property name="jmsLogDao" ref="jmsLogDao" />
+	</bean>
+
+</beans>
